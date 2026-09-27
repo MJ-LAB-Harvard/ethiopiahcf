@@ -1,0 +1,3905 @@
+{UTF-8}
+other health service utilization=
+	DELAY1( reference utilization per capita*access multiplier , time to perceive change in access\
+		)
+	~	1/Year
+	~		|
+
+time to perceive change in access=
+	1
+	~	Year
+	~	Assumed that when health care access increases it takes about 1 year for \
+		people to realize before they increase their utilization of the services
+	|
+
+Adjusted annual average revenue of facilities= INTEG (
+	reimbursements+revenue from user fees-expenditures,
+		DATA avg adjusted total unutilized internal revenue*fiscal time)
+	~	Birr/facility
+	~		|
+
+fiscal time=
+	1
+	~	Year
+	~		|
+
+people screened for HTN in 2011= INTEG (
+	 IF THEN ELSE(Time >= 2011-TIME STEP :AND: Time < 2011, people screened for NCD[HTN]\
+		/TIME STEP, 0),
+		 0)
+	~	patient/Year
+	~		|
+
+screening effort relative to initial data year DIA=
+	ZIDZ(people screened for NCD[DIA],people screened for DIA in 2011)
+	~	1
+	~		|
+
+people screened for DIA in 2011= INTEG (
+	 IF THEN ELSE(Time >= 2011-TIME STEP :AND: Time < 2011, people screened for NCD[DIA]\
+		/TIME STEP, 0),
+		 0)
+	~	patient/Year
+	~		|
+
+screening effort relative to initial data year HTN=
+	ZIDZ(people screened for NCD[HTN],people screened for HTN in 2011)
+	~	1
+	~		|
+
+HTN screen effort=
+	screening effort relative to initial data year HTN
+	~	1
+	~		|
+
+DIA screen effort=
+	screening effort relative to initial data year DIA
+	~	1
+	~		|
+
+strategy to increase restocking=
+	STEP(restock strategy strength*beta, restock strategy start year +TIME STEP)+1
+	~	Dmnl
+	~		|
+
+strategy to increase enrollments=
+	STEP(enrollment strategy strength*alpha, enrollment strategy start year+TIME STEP )+\
+		1
+	~	Dmnl
+	~		|
+
+screening promotion strategy=
+	STEP(screen strategy strength*beta, screen strategy start year+TIME STEP )+1
+	~	Dmnl
+	~		|
+
+strategy to decrease reimbursement delay=
+	1-STEP(delay reduction strategy strength*beta, delay reduction strategy start year+TIME STEP\
+		 )
+	~	Dmnl
+	~		|
+
+strategy to divert unutilized revenue=
+	STEP(unutilized revenue strategy strength*beta, unutilized revenue strategy start year\
+		+TIME STEP )
+	~	Dmnl
+	~		|
+
+strategy to increase demand responsiveness=
+	STEP(responsiveness strategy strength*beta, responsiveness strategy start year+TIME STEP\
+		 )+1
+	~	Dmnl
+	~		|
+
+strategy to increase provider productivity=
+	STEP(provider strategy strength*beta, provider productivity strategy start year+TIME STEP\
+		 )
+	~	Dmnl
+	~		|
+
+strategy to increase fee waivers=
+	STEP(fee waiver strategy strength*alpha, fee waiver strategy start year +TIME STEP)+\
+		1
+	~	Dmnl
+	~		|
+
+strategy to increase provider capacity=
+	STEP(provider number strategy strength*beta, provider strategy start year+TIME STEP \
+		)+1
+	~	Dmnl
+	~		|
+
+strategy to increase reimbursement=
+	STEP(reimbursement strategy strength*beta, reimbursement strategy start year+TIME STEP\
+		 )
+	~	Dmnl
+	~		|
+
+implied discontinuation rate[HTN]=
+	discontinuation rate[HTN]*(2/(1+demand fulfilment ratio))*(relative essential medication availability\
+		^(-strength of med availability on discontinuation[HTN])) ~~|
+implied discontinuation rate[DIA]=
+	discontinuation rate[DIA]*(2/(1+demand fulfilment ratio))*(relative essential medication availability\
+		^(-strength of med availability on discontinuation[DIA]))
+	~	1/Year
+	~	https://www.desmos.com/calculator/tt8ub5p7aw
+	|
+
+demand fulfilment percent=
+	demand fulfilment ratio*100
+	~	Dmnl
+	~		|
+
+regional internal revenue=
+	total internal revenue*facilities in Amhara
+	~	Birr/Year
+	~		|
+
+unutilized revenue strategy strength=
+	0
+	~	Dmnl [0,1]
+	~		|
+
+implied procurement responsiveness=
+	strategy to increase demand responsiveness*procurement responsiveness
+	~	Dmnl
+	~	1 represents perfect tracking; 0 represents no response at all. 0.5: \
+		partial realistic
+	|
+
+adjusted annual average RDF=
+	unutilized internal revenue per facility+avg adjusted total revolving drug funds+((revenue from user fees\
+		+reimbursements)*fraction allocated to RDF)
+	~	Birr/(Year*facility)
+	~		|
+
+responsiveness strategy strength=
+	0
+	~	Dmnl [0,1]
+	~		|
+
+unutilized revenue strategy start year=
+	2018
+	~	Year [2010,?]
+	~		|
+
+implied medication restocking=
+	base medication restocking rate*relative avg adjusted total revolving drug funds*(change in demand for medications\
+		^(implied procurement responsiveness))*strategy to increase restocking
+	~	1/Year
+	~		|
+
+responsiveness strategy start year=
+	2018
+	~	Year [2010,?]
+	~		|
+
+unutilized internal revenue per facility=
+	unutilized internal revenue*strategy to divert unutilized revenue
+	~	Birr/(Year*facility)
+	~		|
+
+implied enrollment rate=
+	base enrollment rate*eff of perceived benefit on enrollment
+	~	1/Year
+	~		|
+
+new enrollments=
+	min(People in informal sector not enrolled to CBHI*implied enrollment rate*strategy to increase enrollments\
+		,People in informal sector not enrolled to CBHI
+	*strategy to increase enrollments/time to enroll)
+	~	household/Year
+	~	min(People in informal sector not enrolled to CBHI*implied enrollment rate*strategy \
+		to increase enrollments,People in informal sector not enrolled to CBHI
+		*strategy to increase enrollments/time to enroll)
+	|
+
+people screened for NCD[HTN]=
+	max(NCD screen rate[HTN]*(Untreated NCD[HTN]+Population at risk of developing NCD[HTN\
+		]),0) ~~|
+people screened for NCD[DIA]=
+	max(NCD screen rate[DIA]*(Untreated NCD[DIA]+Population at risk of developing NCD[DIA\
+		]),0)
+	~	person/Year
+	~		|
+
+productivity gap=
+	target productivity-provider productivity
+	~	Dmnl
+	~		|
+
+target productivity=
+	0.8
+	~	Dmnl
+	~		|
+
+NCD screen rate[HTN]=
+	min(implied screening propensity[HTN]*eff of health coverage on screening[HTN]*demand fulfilment ratio\
+		,1) ~~|
+NCD screen rate[DIA]=
+	min(implied screening propensity[DIA]*eff of health coverage on screening[DIA]*demand fulfilment ratio\
+		,1)
+	~	1/Year
+	~		|
+
+percent enrolled in insurance among eligible households=
+	(CBHI beneficiaries+Fee waivered population with health coverage)/(CBHI beneficiaries\
+		+People in informal sector not enrolled to CBHI+Fee waivered population with health coverage\
+		)
+	~	1
+	~		|
+
+reimbursement strategy strength=
+	0
+	~	Dmnl [0,1]
+	~		|
+
+target reimbursement=
+	0.9
+	~	Dmnl
+	~		|
+
+target gap=
+	target reimbursement-implied CBHI reimbursement approval fraction
+	~	1
+	~		|
+
+provider productivity=
+	min(0.57+strategy to increase provider productivity,1)
+	~	Dmnl
+	~	"44% of clinical staff was not available on the day of the survey. Various reasons \
+		were given for this. Amongst the clinical staff, 38% were absent because \
+		of attendance to seminar sessions, 8% because of long-training, 25% were \
+		on official travel and 20% were on leave. RCH clinic nurses were present \
+		for 7 hours a day, but only worked productively for 57% of time present at \
+		facility."
+		
+		https://link.springer.com/article/10.1186/1478-4491-10-3
+	|
+
+provider strategy strength=
+	0
+	~	Dmnl [0,1]
+	~		|
+
+provider productivity strategy start year=
+	2018
+	~	Year [2010,?]
+	~		|
+
+demand fulfilment ratio=
+	min(1, ZIDZ(total provider minutes, total demand minutes))
+	~	Dmnl
+	~	min(1, ZIDZ(total NCD provider minutes, total NCD demand minutes))
+		min(1, ZIDZ(total provider minutes, total demand minutes))
+	|
+
+p26=
+	IF THEN ELSE( 2006<= Time :AND: Time<=2016, ZIDZ(ABS(p26 data-p26 sim),p26 data)*more weight on confidence data\
+		, :NA:)
+	~	Dmnl
+	~		|
+
+population cal weight=
+	more weight on confidence data
+	~	Dmnl
+	~		|
+
+access multiplier=
+	(care capacity per capita / initial care capacity per capita)
+	~	1
+	~		|
+
+total payoff=
+	((
+	IF THEN ELSE(p1=:NA:, 0 , p1 )+
+	IF THEN ELSE(p2=:NA:, 0 , p2 )+
+	IF THEN ELSE(p3=:NA:, 0 , p3 )+
+	IF THEN ELSE(p4=:NA:, 0 , p4 )+
+	IF THEN ELSE(p5=:NA:, 0 , p5 )+
+	IF THEN ELSE(p6=:NA:, 0 , p6 )+
+	IF THEN ELSE(p7=:NA:, 0 , p7 )+
+	IF THEN ELSE(p8=:NA:, 0 , p8 )+
+	IF THEN ELSE(p14=:NA:, 0 , p14 )+
+	IF THEN ELSE(p15=:NA:, 0 , p15 )+
+	IF THEN ELSE(p16=:NA:, 0 , p16 )+
+	IF THEN ELSE(p17=:NA:, 0 , p17 )+
+	IF THEN ELSE(p18=:NA:, 0 , p18 )+
+	IF THEN ELSE(p19=:NA:, 0 , p19 )+
+	
+	IF THEN ELSE(p21=:NA:, 0 , p21 )+
+	IF THEN ELSE(p22=:NA:, 0 , p22 )+
+	IF THEN ELSE(p23=:NA:, 0 , p23 )+
+	IF THEN ELSE(p24=:NA:, 0 , p24 )+
+	IF THEN ELSE(p25=:NA:, 0 , p25 )+
+	IF THEN ELSE(p26=:NA:, 0 , p26 )+
+	IF THEN ELSE(p27=:NA:, 0 , p27 )+
+	IF THEN ELSE(p28=:NA:, 0 , p28 )+
+	IF THEN ELSE(p29=:NA:, 0 , p29 )+
+	IF THEN ELSE(p30=:NA:, 0 , p30 )+
+	IF THEN ELSE(p31=:NA:, 0 , p31 )+
+	IF THEN ELSE(p32=:NA:, 0 , p32 )+
+	IF THEN ELSE(p33=:NA:, 0 , p33 )
+	)*(partial cal switch))
+	+
+	(
+	IF THEN ELSE(p9=:NA:, 0 , p9 )+
+	IF THEN ELSE(p10=:NA:, 0 , p10 )+
+	IF THEN ELSE(p11=:NA:, 0 , p11 )+
+	IF THEN ELSE(p12=:NA:, 0 , p12 )+
+	IF THEN ELSE(p13=:NA:, 0 , p13 ))*(1-partial cal switch)
+	~	Dmnl
+	~		|
+
+implied CBHI reimbursement approval fraction=
+	min(CBHI reimbursement approval fraction DATA+strategy to increase reimbursement,1)
+	~	Dmnl
+	~		|
+
+relative essential medication availability=
+	ZIDZ(essential medication availability, initial essential medicine availability)
+	~	Dmnl
+	~		|
+
+implied tx enrollment frac post screening[HTN]=
+	base tx enrollment rate post screening[HTN]*demand fulfilment ratio*(relative essential medication availability\
+		^(strength of med availability on enrollment[HTN])) ~~|
+implied tx enrollment frac post screening[DIA]=
+	base tx enrollment rate post screening[DIA]*demand fulfilment ratio*(relative essential medication availability\
+		^(strength of med availability on enrollment[DIA]))
+	~	Dmnl
+	~		|
+
+essential medication availability=
+	Facilities with medication/(Facilities with medication+Facilities without medication\
+		)
+	~	Dmnl
+	~		|
+
+demand minutes for NCD screening=
+	NCD screening related service utilization * minutes per visit
+	~	minute/Year
+	~		|
+
+new enrollment into care[HTN]=
+	min( people screened positive for NCD[HTN]*implied tx enrollment frac post screening\
+		[HTN],
+		     Untreated NCD[HTN]/transition time ) ~~|
+new enrollment into care[DIA]=
+	min( people screened positive for NCD[DIA]*implied tx enrollment frac post screening\
+		[DIA], 
+	Untreated NCD[DIA]/transition time )
+	~	person/Year
+	~	min( people screened positive for NCD[HTN]*base tx enrollment rate post \
+		screening[HTN]*(2*demand fulfilment ratio/(1+demand fulfilment ratio
+		)),
+			     Untreated NCD[HTN]/transition time )
+	|
+
+strength of med availability on enrollment[HTN]=
+	1 ~~|
+strength of med availability on enrollment[DIA]=
+	1
+	~	Dmnl
+	~		|
+
+strength of med availability on discontinuation[HTN]=
+	1 ~~|
+strength of med availability on discontinuation[DIA]=
+	1
+	~	Dmnl
+	~		|
+
+DATA total providers=
+	DATA general practitioners
+	~	provider
+	~		|
+
+implied positive screening rate[HTN]=
+	base positive NCD fraction for screened people[HTN]*relative untreated NCD[HTN] ~~|
+implied positive screening rate[DIA]=
+	base positive NCD fraction for screened people[DIA]*relative untreated NCD[DIA]
+	~	Dmnl
+	~		|
+
+p32=
+	IF THEN ELSE(2011<= Time :AND: Time<=2016,
+	ZIDZ(ABS(p32 data-p32 sim), p32 data)*less weight on unconfident data, :NA:)
+	~	Dmnl
+	~		|
+
+p33=
+	IF THEN ELSE(2011<= Time :AND: Time<=2016,
+	ZIDZ(ABS(p33 data-p33 sim), p33 data)*less weight on unconfident data, :NA:)
+	~	Dmnl
+	~		|
+
+p30=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, ZIDZ(ABS(p30 data-p30 sim),p30 data
+	), :NA:)
+	~	Dmnl
+	~		|
+
+p31=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, ZIDZ(ABS(p31 data-p31 sim),p31 data
+	), :NA:)
+	~	Dmnl
+	~		|
+
+p33 sim=
+	Treated NCD[DIA]
+	~	patient
+	~		|
+
+DATA total DIA patients previously enrolled:INTERPOLATE:
+	~	patient
+	~		|
+
+p32 data=
+	IF THEN ELSE(2011<= Time :AND: Time<=2016,DATA total HTN patients previously enrolled\
+		, :NA:)
+	~	patient
+	~		|
+
+p32 sim=
+	Treated NCD[HTN]
+	~	patient
+	~		|
+
+DATA total HTN patients previously enrolled:INTERPOLATE:
+	~	patient
+	~		|
+
+p33 data=
+	IF THEN ELSE(2011<= Time :AND: Time<=2016,DATA total DIA patients previously enrolled\
+		, :NA:)
+	~	patient
+	~		|
+
+utilized internal revenue=
+	total internal revenue*internal revenue execution rate
+	~	Birr/(facility*Year)
+	~		|
+
+initial prevalence[HTN]=
+	0.196 ~~|
+initial prevalence[DIA]=
+	0.078
+	~	Dmnl
+	~		|
+
+initial prevalent NCD[HTN]=
+	initial adult population[HTN]*initial prevalence[HTN] ~~|
+initial prevalent NCD[DIA]=
+	initial adult population[DIA]*initial prevalence[DIA]
+	~	person
+	~		|
+
+p23=
+	IF THEN ELSE( 2007<= Time :AND: Time<=2017, ZIDZ(ABS(p23 data-p23 sim),p23 data), :NA:\
+		)
+	~	Dmnl
+	~		|
+
+p30 sim=
+	people screened positive for HTN
+	~	person/Year
+	~		|
+
+initial fraction in treatment[HTN]=
+	0.3 ~~|
+initial fraction in treatment[DIA]=
+	0.03
+	~	Dmnl
+	~	HTN: https://pubmed.ncbi.nlm.nih.gov/42294125/
+		DIA: https://pubmed.ncbi.nlm.nih.gov/29742131/
+	|
+
+p22 sim=
+	utilized internal revenue
+	~	Birr/(Year*facility)
+	~		|
+
+less weight on unconfident data=
+	0
+	~	Dmnl
+	~		|
+
+cost to fee ratio=
+	0.6
+	~	Dmnl
+	~		|
+
+CBHI reimbursement approval fraction DATA=
+	ZIDZ(DATA total CBHI reimbursements, DATA total CBHI reimbursements requested)
+	~	Dmnl
+	~		|
+
+initial adult population[NCD]=
+	INITIAL(DATA Amhara total population 30 yo plus)
+	~	person
+	~		|
+
+p31 sim=
+	people screened positive for DIA
+	~	person/Year
+	~		|
+
+internal revenue execution rate=
+	0.6
+	~	Dmnl
+	~	Share of retained internal revenue facilities can actually execute
+	|
+
+base provider per facility=
+	2
+	~	provider/facility
+	~		|
+
+procurement responsiveness=
+	0.5
+	~	Dmnl
+	~	1 represents perfect tracking; 0 represents no response at all. 0.5: \
+		partial realistic
+	|
+
+net change in provider availability=
+	ZIDZ(provider gap, max provider per facility)*provider adjustment rate
+	~	provider/Year
+	~		|
+
+max provider per facility=
+	base provider per facility * strategy to increase provider capacity
+	~	provider/facility
+	~		|
+
+annual inflation rate=
+	0.25
+	~	1/Year
+	~		|
+
+restocking rate=
+	min(Facilities without medication*implied medication restocking
+	,Facilities without medication/facility stock adjustment time
+	)
+	~	facility/Year
+	~		|
+
+minutes per non NCD visit=
+	minutes per visit
+	~	minute/patient
+	~		|
+
+total provider minutes=
+	Total Providers*annual clinical minutes per provider*provider productivity
+	~	minute/Year
+	~		|
+
+total annual clinical minutes per provider=
+	220 * 7 * 60
+	~	minute/(provider*Year)
+	~	220 working days × 7 clinical hours × 60 min
+		
+		"44% of clinical staff was not available on the day of the survey. Various reasons \
+		were given for this. Amongst the clinical staff, 38% were absent because \
+		of attendance to seminar sessions, 8% because of long-training, 25% were \
+		on official travel and 20% were on leave. RCH clinic nurses were present \
+		for 7 hours a day, but only worked productively for 57% of time present at \
+		facility."
+		
+		https://link.springer.com/article/10.1186/1478-4491-10-3
+	|
+
+revenue utilization time=
+	1
+	~	Year
+	~		|
+
+base average reimbursement per person=
+	3
+	~	Birr/person
+	~		|
+
+reimbursement requests from CBHIs=
+	CBHI or fee waivered patient visits*base average reimbursement per person
+	~	Birr/Year
+	~		|
+
+annual clinical minutes per provider=
+	total annual clinical minutes per provider * fraction of day in clinic time
+	~	minute/(provider*Year)
+	~		|
+
+fraction of day in clinic time=
+	0.56
+	~	Dmnl
+	~	"44% of clinical staff was not available on the day of the survey. Various reasons \
+		were given for this. Amongst the clinical staff, 38% were absent because \
+		of attendance to seminar sessions, 8% because of long-training, 25% were \
+		on official travel and 20% were on leave. RCH clinic nurses were present \
+		for 7 hours a day, but only worked productively for 57% of time present at \
+		facility."
+		
+		https://link.springer.com/article/10.1186/1478-4491-10-3
+	|
+
+p4=
+	IF THEN ELSE( Time>=2010-1:AND:Time <=2010+1 ,  ZIDZ(ABS(p4 data-p4 sim),p4 data*2*TIME STEP\
+		/OneYear)
+	, :NA:)
+	~	Dmnl
+	~	If data are point estimates(annual values), we need to divide by TIME STEP \
+		to give comparable weight in payoff (due to time series data contributing \
+		to payoff every TIME STEP); otherwise priors will be under-weighted \
+		proportional to TIME STEP.
+	|
+
+OneYear=
+	1
+	~	Year
+	~		|
+
+demand minutes for NCD=
+	total NCD care demand pop * minutes per NCD patient year
+	~	minute/Year
+	~		|
+
+demand minutes for non NCD=
+	non NCD visits * minutes per non NCD visit
+	~	minute/Year
+	~		|
+
+initial tot demand minute ratio=
+	0.5
+	~	Dmnl
+	~		|
+
+initial total demand minutes=
+	ZIDZ(total provider minutes,initial tot demand minute ratio)
+	~	minute/Year
+	~		|
+
+capacity utilization=
+	ZIDZ(total demand minutes, total provider minutes)
+	~	Dmnl
+	~		|
+
+non NCD visits=
+	total visits - active patient NCD related service utilization - NCD screening related service utilization
+	~	person/Year
+	~		|
+
+total demand minutes=
+	DELAY1I(	demand minutes for non NCD
+		+ demand minutes for NCD
+		+ demand minutes for NCD screening,
+		TIME STEP, initial total demand minutes)
+	~	minute/Year
+	~		|
+
+minutes per visit=
+	5
+	~	minute/patient
+	~	remember to include citations
+	|
+
+minutes per NCD patient year=
+	annual health service utilization per NCD patient*minutes per visit
+	~	minute/patient/Year
+	~	 2 visits (every 6 months) × 20 min/visit =40
+	|
+
+eff of coverage on service utilization=
+	1.35
+	~	1
+	~	Community-based health insurance (CBHI) enrolees experience a 30 to 41 \
+		percent increase in health care utilization (Mebratie et al. 2019) \
+		(10.1016/j.socscimed.2018.11.003). We use an average of 35%
+	|
+
+reference utilization per capita=
+	0.1
+	~	1/Year
+	~		|
+
+initial care capacity per capita= INITIAL(
+	care capacity per capita)
+	~	provider/person
+	~		|
+
+new utilization for HTN screen=
+	people screened for NCD[HTN]
+	~	person/Year
+	~		|
+
+p30 data=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, DATA positive result for screened HTN, :NA:\
+		)
+	~	person/Year
+	~		|
+
+p31 data=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, DATA positive result for screened DIA , \
+		:NA:)
+	~	person/Year
+	~		|
+
+new utilization for DIA screen=
+	people screened for NCD[DIA]
+	~	person/Year
+	~		|
+
+initial perceived benefit= INITIAL(
+	percent enrolled in CBHI)
+	~	Dmnl
+	~		|
+
+percent enrolled in CBHI=
+	CBHI beneficiaries/(CBHI beneficiaries+People in informal sector not enrolled to CBHI\
+		)
+	~	Dmnl
+	~		|
+
+relative benefit=
+	ZIDZ(percent enrolled in CBHI,initial perceived benefit)
+	~	1
+	~		|
+
+adjusted subsidies=
+	adjusted total CBHI collected fees*subsidy fraction
+	~	Birr/Year
+	~		|
+
+care capacity per capita=
+	Total Providers/DATA Amhara total population 30 yo plus
+	~	provider/person
+	~		|
+
+alpha=
+	1
+	~	Dmnl
+	~		|
+
+beta=
+	1
+	~	Dmnl
+	~		|
+
+people screened positive for HTN=
+	people screened positive for NCD[HTN]
+	~	person/Year
+	~		|
+
+people screened positive for DIA=
+	people screened positive for NCD[DIA]
+	~	person/Year
+	~		|
+
+screen strategy start year=
+	2018
+	~	Year [2010,?]
+	~		|
+
+screen strategy strength=
+	0
+	~	Dmnl [0,1]
+	~		|
+
+p29 sim=
+	adjusted subsidies
+	~	Birr/Year
+	~		|
+
+implied screening propensity[HTN]=
+	base NCD screening propensity[HTN]*screening promotion strategy ~~|
+implied screening propensity[DIA]=
+	base NCD screening propensity[DIA]*screening promotion strategy
+	~	1/Year
+	~		|
+
+DATA general subsidies:INTERPOLATE:
+	~	Birr/Year
+	~		|
+
+p5=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, ZIDZ(ABS(p5 data-p5 sim),p5 data
+	), :NA:)
+	~	Dmnl
+	~		|
+
+p5 data=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, DATA early loss to follow up HTN , :NA:)
+	~	person/Year
+	~		|
+
+early discont[HTN]=
+	fraction discont early*discontinuation from care[HTN] ~~|
+early discont[DIA]=
+	discontinuation from care[DIA]*fraction discont early
+	~	person/Year
+	~		|
+
+subsidy fraction=
+	0.1
+	~	Dmnl
+	~		|
+
+p6 data=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, DATA early loss to follow up DIA  , :NA:\
+		)
+	~	person/Year
+	~		|
+
+restock strategy start year=
+	2018
+	~	Year [2010,?]
+	~		|
+
+restock strategy strength=
+	0
+	~	Dmnl [0,1]
+	~		|
+
+p6 sim=
+	early loss to follow up DIA
+	~	person/Year
+	~		|
+
+DATA adjusted subsidies=
+	DATA general subsidies*DATA inflation conversion multiplier for 2017 birr value
+	~	Birr/Year
+	~		|
+
+reimbursement strategy start year=
+	2018
+	~	Year [2010,?]
+	~		|
+
+CBHI reimbursements approved=
+	min(reimbursement requests from CBHIs*implied CBHI reimbursement approval fraction, \
+		CBHI revenue/revenue utilization time)
+	~	Birr/Year
+	~		|
+
+provider strategy start year=
+	2018
+	~	Year [2010,?]
+	~		|
+
+p29=
+	IF THEN ELSE( 2009<= Time :AND: Time<=2016, ZIDZ(ABS(p29 data-p29 sim),p29 data), :NA:\
+		)
+	~	Dmnl
+	~		|
+
+p29 data=
+	IF THEN ELSE( 2009<= Time :AND: Time<=2016, DATA adjusted subsidies , :NA:)
+	~	Birr/Year
+	~		|
+
+collected fees and subsidies=
+	adjusted total CBHI collected fees+adjusted subsidies
+	~	Birr/Year
+	~		|
+
+provider number strategy strength=
+	0
+	~	Dmnl [0,1]
+	~		|
+
+early loss to follow up HTN=
+	early discont[HTN]
+	~	person/Year
+	~		|
+
+p6=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, ZIDZ(ABS(p6 data-p6 sim),p6 data
+	), :NA:)
+	~	Dmnl
+	~		|
+
+fraction discont early=
+	0.8
+	~	Dmnl
+	~	add citations
+	|
+
+early loss to follow up DIA=
+	early discont[DIA]
+	~	person/Year
+	~		|
+
+p5 sim=
+	early loss to follow up HTN
+	~	person/Year
+	~		|
+
+fraction not in treatment[HTN]=
+	1-Fraction in treatment[HTN] ~~|
+fraction not in treatment[DIA]=
+	1-Fraction in treatment[DIA]
+	~	Dmnl
+	~		|
+
+Prevalence[HTN]=
+	(Untreated NCD[HTN]+Treated NCD[HTN])/total adult population 1 ~~|
+Prevalence[DIA]=
+	(Untreated NCD[DIA]+Treated NCD[DIA])/total adult population 2
+	~	Dmnl
+	~		|
+
+relative untreated NCD[HTN]=
+	fraction not in treatment[HTN]/initial fraction not in treatment[HTN] ~~|
+relative untreated NCD[DIA]=
+	fraction not in treatment[DIA]/initial fraction not in treatment[DIA]
+	~	Dmnl
+	~		|
+
+initial fraction not in treatment[HTN]= INITIAL(
+	fraction not in treatment[HTN]) ~~|
+initial fraction not in treatment[DIA]= INITIAL(
+	fraction not in treatment[DIA])
+	~	Dmnl
+	~		|
+
+Fraction in treatment[HTN]=
+	Treated NCD[HTN]/(Untreated NCD[HTN]+Treated NCD[HTN]) ~~|
+Fraction in treatment[DIA]=
+	Treated NCD[DIA]/(Untreated NCD[DIA]+Treated NCD[DIA])
+	~	Dmnl
+	~	HTN: https://pmc.ncbi.nlm.nih.gov/articles/PMC6288930/
+	|
+
+people screened positive for NCD[HTN]=
+	people screened for NCD[HTN]*implied positive screening rate[HTN] ~~|
+people screened positive for NCD[DIA]=
+	people screened for NCD[DIA]*implied positive screening rate[DIA]
+	~	person/Year
+	~		|
+
+total NCD care demand pop=
+	SUM(Treated NCD[NCD!])
+	~	person
+	~		|
+
+dropout=
+	max(min(CBHI beneficiaries*dropout rate,CBHI beneficiaries/change time),0)
+	~	household/Year
+	~		|
+
+base positive NCD fraction for screened people[HTN]=
+	0.2 ~~|
+base positive NCD fraction for screened people[DIA]=
+	0.1
+	~	Dmnl
+	~		|
+
+DATA tx enrollment rate post screening[HTN]=
+	DATA newly enrolled HTN/DATA positive result for screened HTN ~~|
+DATA tx enrollment rate post screening[DIA]=
+	DATA newly enrolled DIA/DATA positive result for screened DIA
+	~	Dmnl
+	~		|
+
+p15=
+	IF THEN ELSE( 2006<= Time :AND: Time<=2017, ZIDZ(ABS(p15 data-p15 sim),p15 data)*population cal weight\
+		, :NA:)
+	~	Dmnl
+	~		|
+
+base tx enrollment rate post screening[HTN]=
+	0.5 ~~|
+base tx enrollment rate post screening[DIA]=
+	0.5
+	~	Dmnl
+	~		|
+
+p16=
+	IF THEN ELSE( 2006<= Time :AND: Time<=2017, ZIDZ(ABS(p16 data-p16 sim),p16 data)*population cal weight\
+		, :NA:)
+	~	Dmnl
+	~		|
+
+death of at risk population[HTN]=
+	min(base death rate*Population at risk of developing NCD[HTN],Population at risk of developing NCD\
+		[HTN]/ transition time) ~~|
+death of at risk population[DIA]=
+	min(base death rate*Population at risk of developing NCD[DIA],Population at risk of developing NCD\
+		[DIA]/ transition time)
+	~	person/Year
+	~		|
+
+total adult population 1=
+	Treated NCD[HTN]+Population at risk of developing NCD[HTN]+Untreated NCD[HTN]
+	~	person
+	~		|
+
+total adult population 2=
+	Treated NCD[DIA]+Population at risk of developing NCD[DIA]+Untreated NCD[DIA]
+	~	person
+	~		|
+
+death rate for untreated NCD[HTN]=
+	base death rate*relative death risk for NCD[HTN] ~~|
+death rate for untreated NCD[DIA]=
+	base death rate*relative death risk for NCD[DIA]
+	~	1/Year [0,0.01,0.001]
+	~		|
+
+total deaths=
+	death of at risk population[HTN]+death of at risk population[DIA]+death among undiag NCD patients DIA\
+		+death among undiag NCD patients HTN+total death among NCD patients DIA+total death among NCD patients HTN
+	~	person/Year
+	~		|
+
+developing NCD[HTN]=
+	min(Population at risk of developing NCD[HTN]*NCD development rate[HTN], Population at risk of developing NCD\
+		[HTN]/transition time) ~~|
+developing NCD[DIA]=
+	min(Population at risk of developing NCD[DIA]*NCD development rate[DIA],Population at risk of developing NCD\
+		[DIA]/transition time)
+	~	person/Year
+	~		|
+
+Population at risk of developing NCD[HTN]= INTEG (
+	new people joining at risk population-death of at risk population[HTN]- developing NCD\
+		[HTN],
+		initial population at risk of developing NCD[HTN]) ~~|
+Population at risk of developing NCD[DIA]= INTEG (
+	new people joining at risk population-death of at risk population[DIA]-developing NCD\
+		[DIA],
+		initial population at risk of developing NCD[DIA])
+	~	person
+	~		|
+
+partial cal switch=
+	1
+	~	Dmnl
+	~		|
+
+net enrollment rate in 2007=
+	0.53
+	~	Dmnl
+	~		|
+
+CBHI beneficiaries= INTEG (
+	new enrollments-dropout,
+		initial CBHI beneficiaries)
+	~	household
+	~		|
+
+initial CBHI beneficiaries=
+	net enrollment rate in 2007*DATA CBHI targeted households
+	~	household
+	~		|
+
+initial CBHI eligible not enrolled=
+	(1-net enrollment rate in 2007)*DATA CBHI targeted households
+	~	household
+	~		|
+
+People in informal sector not enrolled to CBHI= INTEG (
+	dropout+eligible population adjustment+fee waiver enrollment change-fee waivered insurance coverage\
+		-new enrollments,
+		initial CBHI eligible not enrolled)
+	~	household
+	~		|
+
+household size adj for fees=
+	1
+	~	Dmnl
+	~		|
+
+adjusted total CBHI collected fees=
+	DATA adjusted membership cost per household*CBHI beneficiaries*household size adj for fees
+	~	Birr/Year
+	~		|
+
+more weight on confidence data=
+	5
+	~	Dmnl
+	~		|
+
+p11=
+	IF THEN ELSE( 2009<= Time :AND: Time<=2016, ZIDZ(ABS(p11 data-p11 sim),p11 data)*more weight on confidence data\
+		, :NA:)
+	~	Dmnl
+	~		|
+
+CBHI or fee waivered patient visits=
+	insured service utilization per capita*adult pop with coverage
+	~	person/Year
+	~		|
+
+adult pop with coverage=
+	DATA Amhara total population 30 yo plus*frac adult of pop with coverage
+	~	person
+	~		|
+
+uninsured service utilization per capita=
+	other health service utilization+NCD related service utilization per capita
+	~	1/Year
+	~		|
+
+insured service utilization per capita=
+	(other health service utilization+NCD related service utilization per capita)*eff of coverage on service utilization
+	~	1/Year
+	~		|
+
+NCD related service utilization=
+	(active patient NCD related service utilization+NCD screening related service utilization\
+		)
+	~	person/Year
+	~		|
+
+NCD related service utilization per capita=
+	NCD related service utilization/DATA Amhara total population 30 yo plus
+	~	1/Year
+	~		|
+
+total service utilization per capita=
+	total visits/DATA Amhara total population 30 yo plus
+	~	1/Year
+	~		|
+
+uninsured patient visits=
+	(uninsured service utilization per capita)*DATA Amhara total population 30 yo plus
+	*(1-frac adult of pop with coverage)
+	~	person/Year
+	~		|
+
+CBHI paid=
+	CBHI paid before inflation adjustment / (1 + annual inflation rate*OneYear\
+		)^(implied delay/OneYear)
+	~	Birr/Year
+	~		|
+
+CBHI paid before inflation adjustment=
+	DELAY1(CBHI reimbursements approved, implied delay)
+	~	Birr/Year
+	~	Split out of CBHI paid so that SDEverywhere translates the delay correctly. Results in Vensim are unchanged.
+	|
+
+implied eligible households not enrolled=
+	DATA CBHI targeted households-(CBHI beneficiaries+Fee waivered population with health coverage\
+		)
+	~	household
+	~		|
+
+relative avg adjusted total revolving drug funds=
+	adjusted annual average RDF/initial avg adjusted total revolving drug funds
+	~	Dmnl
+	~		|
+
+initial avg adjusted total revolving drug funds= INITIAL(
+	adjusted annual average RDF)
+	~	Birr/(Year*facility)
+	~		|
+
+initial facilities with medication=
+	initial essential medicine availability*facilities in Amhara
+	~	facility
+	~		|
+
+initial facilities without medication=
+	(1-initial essential medicine availability)*facilities in Amhara
+	~	facility
+	~		|
+
+expenditures=
+	min((total visits*base average care cost per person)/facilities in Amhara, Adjusted annual average revenue of facilities
+	/revenue utilization time)
+	~	Birr/(Year*facility)
+	~		|
+
+base average care cost per person=
+	base average fee per person*cost to fee ratio
+	~	Birr/person
+	~		|
+
+facility stock adjustment time=
+	0.25
+	~	Year
+	~		|
+
+stock out rate=
+	min(Facilities with medication*implied medication utilization rate,Facilities with medication\
+		/facility stock adjustment time)
+	~	facility/Year
+	~		|
+
+p28 sim=
+	essential medication availability
+	~	Dmnl
+	~		|
+
+Facilities with medication= INTEG (
+	restocking rate-stock out rate,
+		initial facilities with medication)
+	~	facility
+	~		|
+
+Facilities without medication= INTEG (
+	stock out rate-restocking rate,
+		initial facilities without medication)
+	~	facility
+	~		|
+
+fraction allocated to RDF=
+	0.6
+	~	Dmnl
+	~		|
+
+p26 sim=
+	total service utilization per capita
+	~	1/Year
+	~		|
+
+avg adjusted total revolving drug funds=
+	DATA adjusted total revolving drug funds/facilities in Amhara
+	~	Birr/(Year*facility)
+	~		|
+
+revenue from user fees=
+	(uninsured patient visits*base average fee per person)/facilities in Amhara
+	~	Birr/(Year*facility)
+	~		|
+
+total visits=
+	CBHI or fee waivered patient visits+uninsured patient visits
+	~	person/Year
+	~		|
+
+p3 data=
+	IF THEN ELSE( Time>=2007-1 :AND: Time <=2007+1, Point DATA Prevalence HTN, :NA:)
+	~	1
+	~		|
+
+p4 data=
+	IF THEN ELSE( Time>= 2010-1:AND: Time <=2010+1, Point DATA Prevalance DIA
+	, :NA:)
+	~	1
+	~		|
+
+discontinuation from care[HTN]=
+	min(Treated NCD[HTN]*implied discontinuation rate[HTN],Treated NCD
+	[HTN]/transition time) ~~|
+discontinuation from care[DIA]=
+	min(Treated NCD[DIA]*implied discontinuation rate[DIA],Treated NCD
+	[DIA]/transition time)
+	~	person/Year
+	~		|
+
+p3=
+	IF THEN ELSE( Time>=2007-1 :AND: Time <=2007+1 , ZIDZ(ABS(p3 data-p3 sim),p3 data*TIME STEP\
+		/OneYear*2)
+	, :NA:)
+	~	Dmnl
+	~	If data are point estimates(annual values), we need to divide by TIME STEP \
+		to give comparable weight in payoff (due to time series data contributing \
+		to payoff every TIME STEP); otherwise priors will be under-weighted \
+		proportional to TIME STEP.
+	|
+
+implied medication utilization rate=
+	base medication utilization rate*change in demand for medications
+	~	1/Year
+	~		|
+
+active patient NCD related service utilization=
+	(population in DIA treatment+population in HTN treatment)*annual health service utilization per NCD patient
+	~	person/Year
+	~		|
+
+annual health service utilization per NCD patient=
+	2
+	~	1/Year
+	~		|
+
+NCD screening related service utilization=
+	new utilization for DIA screen+new utilization for HTN screen
+	~	person/Year
+	~		|
+
+provider per facility=
+	Total Providers/facilities in Amhara
+	~	provider/facility
+	~		|
+
+provider gap=
+	max(max provider per facility-provider per facility,0)
+	~	provider/facility
+	~		|
+
+Untreated NCD[HTN]= INTEG (
+	developing NCD[HTN]-new enrollment into care[HTN]-death of untreated NCD patients[HTN\
+		]+discontinuation from care[HTN],
+		initial undiagnosed uncontrolled NCD[HTN]) ~~|
+Untreated NCD[DIA]= INTEG (
+	developing NCD[DIA]-new enrollment into care[DIA]-death of untreated NCD patients[DIA\
+		]+discontinuation from care[DIA],
+		initial undiagnosed uncontrolled NCD[DIA])
+	~	person
+	~		|
+
+death among undiag NCD patients DIA=
+	death of untreated NCD patients[DIA]
+	~	person/Year
+	~		|
+
+death among undiag NCD patients HTN=
+	death of untreated NCD patients[HTN]
+	~	person/Year
+	~		|
+
+population in HTN treatment=
+	Treated NCD[HTN]
+	~	person
+	~		|
+
+total death among NCD patients HTN=
+	death of treated NCD patients[HTN]
+	~	person/Year
+	~		|
+
+death of treated NCD patients[HTN]=
+	min(Treated NCD[HTN]*ocm rate for treated[HTN],Treated NCD[HTN]/transition time) ~~|
+death of treated NCD patients[DIA]=
+	min(Treated NCD[DIA]*ocm rate for treated[DIA],Treated NCD[DIA]/transition time)
+	~	person/Year
+	~		|
+
+Treated NCD[HTN]= INTEG (
+	new enrollment into care[HTN]-discontinuation from care[HTN]-death of treated NCD patients\
+		[HTN
+	],
+		initial diagnosed not controlled NCD[HTN]) ~~|
+Treated NCD[DIA]= INTEG (
+	new enrollment into care[DIA]-discontinuation from care[DIA]-death of treated NCD patients\
+		[DIA],
+		initial diagnosed not controlled NCD[DIA])
+	~	person
+	~		|
+
+population in DIA treatment=
+	Treated NCD[DIA]
+	~	person
+	~		|
+
+total death among NCD patients DIA=
+	death of treated NCD patients[DIA]
+	~	person/Year
+	~		|
+
+initial essential medicine availability=
+	DATA Essential medication availability avg
+	~	Dmnl
+	~		|
+
+p17 data=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, DATA newly enrolled HTN , :NA:)
+	~	person/Year
+	~		|
+
+total diagnosed HTN patients in tx=
+	new enrollment into care[HTN]
+	~	person/Year
+	~		|
+
+p18 data=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, DATA newly enrolled DIA  , :NA:)
+	~	person/Year
+	~		|
+
+DATA newly enrolled HTN:INTERPOLATE:
+	~	person/Year
+	~		|
+
+total diagnosed DIA patients in tx=
+	new enrollment into care[DIA]
+	~	person/Year
+	~		|
+
+DATA newly enrolled DIA:INTERPOLATE:
+	~	person/Year
+	~		|
+
+initial fee waivered population=
+	26422
+	~	household
+	~		|
+
+p4 sim=
+	Prevalance DIA
+	~	1
+	~		|
+
+Point DATA Prevalance DIA=
+	0.078
+	~	Dmnl
+	~	https://doi.org/10.1016/j.dsx.2018.11.046
+	|
+
+Point DATA Prevalence HTN=
+	0.196
+	~	Dmnl
+	~	https://link.springer.com/article/10.1186/s40985-015-0014-z
+	|
+
+p28=
+	IF THEN ELSE( 2007<= Time :AND: Time<=2011, ZIDZ(ABS(p28 data-p28 sim),p28 data), :NA:\
+		)
+	~	Dmnl
+	~		|
+
+p28 data=
+	IF THEN ELSE( 2007<= Time :AND: Time<=2011, DATA Essential medication availability avg\
+		, :NA:)
+	~	Dmnl
+	~		|
+
+DATA Essential medication availability avg=
+	(DATA Essential medication availability DIA+DATA Essential medication availability HTN\
+		)/2
+	~	Dmnl
+	~	https://journals.plos.org/plosone/article?id=10.1371/journal.pone.0297622
+	|
+
+DATA Essential medication availability DIA:INTERPOLATE:
+	~	Dmnl
+	~		|
+
+DATA Essential medication availability HTN:INTERPOLATE:
+	~	Dmnl
+	~		|
+
+Prevalence HTN=
+	Prevalence[HTN]
+	~	Dmnl
+	~		|
+
+p3 sim=
+	Prevalence HTN
+	~	1
+	~		|
+
+Prevalance DIA=
+	Prevalence[DIA]
+	~	Dmnl
+	~		|
+
+frac adult of pop with coverage=
+	min(total adult population with coverage/DATA Amhara total population 30 yo plus,1)
+	~	Dmnl
+	~		|
+
+implied delay=
+	max(average reimbursement delay*strategy to decrease reimbursement delay, TIME STEP)
+	~	Year
+	~		|
+
+p16 data=
+	IF THEN ELSE( 2006<= Time :AND: Time<=2017, DATA Amhara total population 30 yo plus \
+		, :NA:)
+	~	person
+	~		|
+
+average reimbursement delay=
+	1
+	~	Year
+	~		|
+
+delay reduction strategy start year=
+	2018
+	~	Year [2010,?]
+	~		|
+
+delay reduction strategy strength=
+	0
+	~	Dmnl [0,1]
+	~		|
+
+p1 data=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, DATA screening effort relative to initial HTN
+	, :NA:)
+	~	1
+	~		|
+
+p8 data=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, DATA total death among enrolled DIA patients\
+		  , :NA:)
+	~	person/Year
+	~		|
+
+p7 data=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, DATA total death among enrolled HTN patients\
+		, :NA:)
+	~	person/Year
+	~		|
+
+p10 data=
+	IF THEN ELSE( 2010<= Time :AND: Time<=2017, DATA new CBHI beneficiaries  , :NA:)
+	~	household/Year
+	~		|
+
+p12 data=
+	IF THEN ELSE( 2012<= Time :AND: Time<=2016, DATA new fee waived beneficiaries , :NA:\
+		)
+	~	household/Year
+	~		|
+
+p14 data=
+	IF THEN ELSE( 2006<= Time :AND: Time<=2016, DATA Amhara total deaths 30 yo plus  , :NA:\
+		)
+	~	person/Year
+	~		|
+
+p13 data=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, DATA total fee waived beneficiaries , :NA:\
+		)
+	~	household
+	~		|
+
+p11 data=
+	IF THEN ELSE( 2009<= Time :AND: Time<=2016, DATA total CBHI beneficiaries , :NA:)
+	~	household
+	~		|
+
+p21 data=
+	IF THEN ELSE( 2007<= Time :AND: Time<=2017, DATA avg adjusted total facility internal revenue\
+		   , :NA:)
+	~	Birr/(Year*facility)
+	~		|
+
+p15 data=
+	IF THEN ELSE( 2006<= Time :AND: Time<=2017, DATA Amhara total population 30 yo plus  \
+		, :NA:)
+	~	person
+	~		|
+
+p24 data=
+	IF THEN ELSE( 2013<= Time :AND: Time<=2016, DATA avg adjusted CBHI reimbursements, :NA:\
+		)
+	~	Birr/(Year*facility)
+	~		|
+
+p20 data=
+	IF THEN ELSE( 2007<= Time :AND: Time<=2017, DATA avg adjusted total public funding ,\
+		 :NA:)
+	~	Birr/(Year*facility)
+	~		|
+
+p2 data=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, DATA screening effort relative to initial DIA
+	, :NA:)
+	~	1
+	~		|
+
+p19 data=
+	IF THEN ELSE( 2009<= Time :AND: Time<=2016, DATA adjusted total CBHI collected fees  \
+		, :NA:)
+	~	Birr/Year
+	~		|
+
+p9 data=
+	IF THEN ELSE( 2009<= Time :AND: Time<=2016, DATA CBHI dropout , :NA:)
+	~	household/Year
+	~		|
+
+p23 data=
+	IF THEN ELSE( 2007<= Time :AND: Time<=2017, DATA avg adjusted total unutilized internal revenue\
+		 , :NA:)
+	~	Birr/(Year*facility)
+	~		|
+
+p22 data=
+	IF THEN ELSE( 2007<= Time :AND: Time<=2017, DATA avg adjusted total utilized internal revenue\
+		  , :NA:)
+	~	Birr/(Year*facility)
+	~		|
+
+p26 data=
+	IF THEN ELSE( 2006<= Time :AND: Time<=2016, DATA health service utilization per capita\
+		, :NA:)
+	~	1/Year
+	~		|
+
+change in demand for medications=
+	total NCD care demand pop/initial demand for medications
+	~	1
+	~		|
+
+p22=
+	IF THEN ELSE( 2007<= Time :AND: Time<=2017, ZIDZ(ABS(p22 data-p22 sim),p22 data), :NA:\
+		)
+	~	Dmnl
+	~		|
+
+initial demand for medications= INITIAL(
+	total NCD care demand pop)
+	~	person
+	~		|
+
+base medication utilization rate=
+	0.7
+	~	1/Year
+	~		|
+
+p27 data=
+	IF THEN ELSE( 2006<= Time :AND: Time<=2016, DATA total providers, :NA:)
+	~	provider
+	~		|
+
+p27 sim=
+	Total Providers
+	~	provider
+	~		|
+
+p27=
+	IF THEN ELSE( 2006<= Time :AND: Time<=2016, ZIDZ(ABS(p27 data-p27 sim),p27 data), :NA:\
+		)
+	~	Dmnl
+	~		|
+
+fee waivered insurance coverage=
+	min(People in informal sector not enrolled to CBHI*new fee waiver rate*strategy to increase fee waivers\
+		, People in informal sector not enrolled to CBHI*strategy to increase fee waivers/time to enroll\
+		)
+	~	household/Year
+	~		|
+
+death of untreated NCD patients[HTN]=
+	min(Untreated NCD[HTN]*death rate for untreated NCD[HTN],Untreated NCD[HTN]/transition time\
+		) ~~|
+death of untreated NCD patients[DIA]=
+	min(Untreated NCD[DIA]*death rate for untreated NCD[DIA],Untreated NCD[DIA]/transition time\
+		)
+	~	person/Year
+	~		|
+
+fee waiver enrollment change=
+	min(Fee waivered population with health coverage*fee waiver adjustment rate,Fee waivered population with health coverage\
+		/change time)
+	~	household/Year
+	~		|
+
+transition time=
+	1
+	~	Year
+	~		|
+
+time to enroll=
+	1
+	~	Year
+	~		|
+
+p2=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, ZIDZ(ABS(p2 data-p2 sim),p2 data)
+	, :NA:)
+	~	Dmnl
+	~		|
+
+switch to set zero=
+	0
+	~	Dmnl
+	~		|
+
+p1=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, ZIDZ(ABS(p1 data-p1 sim),p1 data)
+	, :NA:)
+	~	Dmnl
+	~		|
+
+p23 sim=
+	unutilized internal revenue
+	~	Birr/(Year*facility)
+	~		|
+
+p25=
+	IF THEN ELSE( 2013<= Time :AND: Time<=2016, ZIDZ(ABS(p25 data-p25 sim),p25 data), :NA:\
+		)
+	~	Dmnl
+	~		|
+
+p25 data=
+	IF THEN ELSE( 2013<= Time :AND: Time<=2016,DATA adjusted total CBHI reimbursements requested\
+		, :NA:)
+	~	Birr/Year
+	~		|
+
+p25 sim=
+	reimbursement requests from CBHIs
+	~	Birr/Year
+	~		|
+
+unutilized internal revenue=
+	total internal revenue-utilized internal revenue
+	~	Birr/(Year*facility)
+	~		|
+
+eff of health coverage on screening[HTN]=
+	relative coverage rate^strength coverage on screen[HTN] ~~|
+eff of health coverage on screening[DIA]=
+	relative coverage rate^strength coverage on screen[DIA]
+	~	1
+	~		|
+
+DATA avg adjusted total unutilized internal revenue=
+	DATA avg adjusted total facility internal revenue-DATA avg adjusted total utilized internal revenue
+	~	Birr/(Year*facility)
+	~		|
+
+p24 sim=
+	reimbursements
+	~	Birr/(Year*facility)
+	~		|
+
+fee waiver strategy start year=
+	2018
+	~	Year [2010,?]
+	~		|
+
+fee waiver strategy strength=
+	0
+	~	Dmnl [0,1]
+	~		|
+
+p24=
+	IF THEN ELSE( 2013<= Time :AND: Time<=2016, ZIDZ(ABS(p24 data-p24 sim),p24 data), :NA:\
+		)
+	~	Dmnl
+	~		|
+
+DATA adjusted total revolving drug funds=
+	DATA total revolving drug funds*DATA inflation conversion multiplier for 2017 birr value
+	~	Birr/Year
+	~		|
+
+DATA adjusted total CBHI collected fees=
+	DATA CBHI collected fees*DATA inflation conversion multiplier for 2017 birr value
+	~	Birr/Year
+	~		|
+
+p21 sim=
+	total internal revenue
+	~	Birr/(Year*facility)
+	~		|
+
+DATA avg adjusted total utilized internal revenue=
+	DATA adjusted total utilized internal revenue/facilities in Amhara
+	~	Birr/(Year*facility)
+	~		|
+
+total internal revenue=
+	reimbursements+revenue from user fees
+	~	Birr/(Year*facility)
+	~		|
+
+DATA avg adjusted CBHI reimbursements=
+	DATA adjusted CBHI reimbursements/facilities in Amhara
+	~	Birr/(Year*facility)
+	~		|
+
+p21=
+	IF THEN ELSE( 2007<= Time :AND: Time<=2017, ZIDZ(ABS(p21 data-p21 sim),p21 data), :NA:\
+		)
+	~	Dmnl
+	~		|
+
+DATA avg adjusted total public funding=
+	DATA adjusted total facility revenue/facilities in Amhara
+	~	Birr/(Year*facility)
+	~		|
+
+enrollment strategy strength=
+	0
+	~	Dmnl [0,1]
+	~		|
+
+DATA initial screened DIA= INITIAL(
+	DATA screened DIA)
+	~	person/Year
+	~		|
+
+DATA initial screened HTN= INITIAL(
+	DATA screened HTN)
+	~	person/Year
+	~		|
+
+p18=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, ZIDZ(ABS(p18 data-p18 sim),p18 data
+	), :NA:)
+	~	Dmnl
+	~		|
+
+p19=
+	IF THEN ELSE( 2009<= Time :AND: Time<=2016, ZIDZ(ABS(p19 data-p19 sim),p19 data), :NA:\
+		)
+	~	Dmnl
+	~		|
+
+DATA screening effort relative to initial DIA=
+	DATA screened DIA/DATA initial screened DIA
+	~	1
+	~		|
+
+DATA adjusted membership cost per household=
+	DATA CBHI membership cost per household*DATA inflation conversion multiplier for 2017 birr value
+	~	Birr/(household*Year)
+	~		|
+
+p19 sim=
+	adjusted total CBHI collected fees
+	~	Birr/Year
+	~		|
+
+DATA adjusted total facility revenue=
+	DATA inflation conversion multiplier for 2017 birr value*DATA total facility revenue
+	~	Birr/Year
+	~		|
+
+enrollment strategy start year=
+	2018
+	~	Year [2010,?]
+	~		|
+
+DATA screening effort relative to initial HTN=
+	DATA screened HTN/DATA initial screened HTN
+	~	1
+	~		|
+
+p17=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, ZIDZ(ABS(p17 data-p17 sim),p17 data
+	), :NA:)
+	~	Dmnl
+	~		|
+
+DATA total facility revenue:INTERPOLATE:
+	~	Birr/Year
+	~		|
+
+strength coverage on screen[HTN]=
+	1 ~~|
+strength coverage on screen[DIA]=
+	1
+	~	Dmnl
+	~		|
+
+strength of perceived benefit=
+	1
+	~	Dmnl
+	~		|
+
+eff of perceived benefit on enrollment=
+	relative benefit^strength of perceived benefit
+	~	1
+	~		|
+
+relative coverage rate=
+	ZIDZ(frac adult of pop with coverage,initial health insurance coverage rate)
+	~	Dmnl
+	~		|
+
+DATA avg adjusted total facility internal revenue=
+	DATA adjusted total facility internal revenue/facilities in Amhara
+	~	Birr/(Year*facility)
+	~		|
+
+CBHI revenue= INTEG (
+	collected fees and subsidies-CBHI reimbursements approved,
+		initial CBHI revenue)
+	~	Birr
+	~		|
+
+initial CBHI revenue=
+	100000
+	~	Birr
+	~		|
+
+initial population with coverage= INITIAL(
+	total adult population with coverage)
+	~	person
+	~		|
+
+DATA adjusted CBHI reimbursements=
+	DATA inflation conversion multiplier for 2017 birr value*DATA total CBHI reimbursements
+	~	Birr/Year
+	~		|
+
+DATA adjusted total CBHI reimbursements requested=
+	DATA total CBHI reimbursements requested*DATA inflation conversion multiplier for 2017 birr value
+	~	Birr/Year
+	~		|
+
+DATA adjusted total facility internal revenue=
+	DATA total facility internal revenue*DATA inflation conversion multiplier for 2017 birr value
+	~	Birr/Year
+	~		|
+
+DATA adjusted total utilized internal revenue=
+	DATA inflation conversion multiplier for 2017 birr value*DATA total utilized internal revenue
+	~	Birr/Year
+	~		|
+
+p10=
+	IF THEN ELSE( 2010<= Time :AND: Time<=2016, ZIDZ(ABS(p10 data-p10 sim),p10 data
+	), :NA:)
+	~	Dmnl
+	~		|
+
+p9=
+	IF THEN ELSE( 2009<= Time :AND: Time<=2016, ZIDZ(ABS(p9 data-p9 sim),p9 data),
+	 :NA:)
+	~	Dmnl
+	~		|
+
+initial health insurance coverage rate= INITIAL(
+	frac adult of pop with coverage)
+	~	Dmnl
+	~		|
+
+p14 sim=
+	total deaths
+	~	person/Year
+	~		|
+
+p7=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, ZIDZ(ABS(p7 data-p7 sim),p7 data), :NA:)
+	~	Dmnl
+	~		|
+
+new fee waiver rate=
+	0.001
+	~	1/Year
+	~		|
+
+p15 sim=
+	total adult population 1
+	~	person
+	~		|
+
+avg adult pop per household=
+	2
+	~	person/household
+	~		|
+
+relative death risk for NCD[HTN]=
+	2 ~~|
+relative death risk for NCD[DIA]=
+	2
+	~	Dmnl
+	~		|
+
+DATA total facility internal revenue:INTERPOLATE:
+	~	Birr/Year
+	~		|
+
+fee waiver adjustment rate=
+	0.001
+	~	1/Year
+	~		|
+
+DATA Amhara total deaths 30 yo plus:INTERPOLATE:
+	~	person/Year
+	~		|
+
+DATA Amhara total population 30 yo plus:INTERPOLATE:
+	~	person
+	~		|
+
+DATA CBHI collected fees:INTERPOLATE:
+	~	Birr/Year
+	~		|
+
+DATA CBHI membership cost per household:INTERPOLATE:
+	~	Birr/Year/household
+	~		|
+
+DATA total CBHI reimbursements:INTERPOLATE:
+	~	Birr/Year
+	~		|
+
+DATA total CBHI reimbursements requested:INTERPOLATE:
+	~	Birr/Year
+	~		|
+
+DATA CBHI targeted households:INTERPOLATE:
+	~	household
+	~		|
+
+p12 sim=
+	fee waivered insurance coverage
+	~	household/Year
+	~		|
+
+p17 sim=
+	total diagnosed HTN patients in tx
+	~	person/Year
+	~		|
+
+DATA health service utilization per capita:INTERPOLATE:
+	~	1/Year
+	~		|
+
+DATA inflation conversion multiplier for 2017 birr value:INTERPOLATE:
+	~	Dmnl
+	~		|
+
+DATA new fee waived beneficiaries:INTERPOLATE:
+	~	household/Year
+	~		|
+
+DATA total utilized internal revenue:INTERPOLATE:
+	~	Birr/Year
+	~		|
+
+p16 sim=
+	total adult population 2
+	~	person
+	~		|
+
+p18 sim=
+	total diagnosed DIA patients in tx
+	~	person/Year
+	~		|
+
+DATA total revolving drug funds:INTERPOLATE:
+	~	Birr/Year
+	~		|
+
+p14=
+	IF THEN ELSE( 2006<= Time :AND: Time<=2016, ZIDZ(ABS(p14 data-p14 sim),p14 data), :NA:\
+		)
+	~	Dmnl
+	~		|
+
+treated NCD death risk relative to untreated[HTN]=
+	0.5 ~~|
+treated NCD death risk relative to untreated[DIA]=
+	0.5
+	~	Dmnl
+	~		|
+
+household adjustment time=
+	1
+	~	Year
+	~		|
+
+p9 sim=
+	dropout
+	~	household/Year
+	~		|
+
+p13 sim=
+	Fee waivered population with health coverage
+	~	household
+	~		|
+
+p8=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, ZIDZ(ABS(p8 data-p8 sim),p8 data), :NA:)
+	~	Dmnl
+	~		|
+
+eligible population adjustment=
+	max(((implied eligible households not enrolled-People in informal sector not enrolled to CBHI\
+		)/household adjustment time),0)
+	~	household/Year
+	~		|
+
+Fee waivered population with health coverage= INTEG (
+	fee waivered insurance coverage-fee waiver enrollment change,
+		initial fee waivered population)
+	~	household
+	~		|
+
+p12=
+	IF THEN ELSE( 2012<= Time :AND: Time<=2016, ZIDZ(ABS(p12 data-p12 sim),p12 data), :NA:\
+		)
+	~	Dmnl
+	~		|
+
+p13=
+	IF THEN ELSE( 2011<= Time :AND: Time<=2016, ZIDZ(ABS(p13 data-p13 sim),p13 data), :NA:\
+		)
+	~	Dmnl
+	~		|
+
+total adult population with coverage=
+	(CBHI beneficiaries+Fee waivered population with health coverage)*avg adult pop per household
+	~	person
+	~		|
+
+p11 sim=
+	CBHI beneficiaries
+	~	household
+	~		|
+
+p10 sim=
+	new enrollments
+	~	household/Year
+	~		|
+
+ocm rate for treated[DIA]=
+	death rate for untreated NCD[DIA]*treated NCD death risk relative to untreated[DIA] ~~|
+ocm rate for treated[HTN]=
+	death rate for untreated NCD[HTN]*treated NCD death risk relative to untreated[HTN]
+	~	1/Year [0,0.1,0.001]
+	~		|
+
+NCD:
+	HTN, DIA
+	~	
+	~		|
+
+p7 sim=
+	total death among NCD patients HTN
+	~	person/Year
+	~		|
+
+p1 sim=
+	IF THEN ELSE( 2011<= Time , HTN screen effort, :NA:)
+	~	1
+	~		|
+
+p2 sim=
+	IF THEN ELSE( 2011<= Time , DIA screen effort, :NA:)
+	~	1
+	~		|
+
+p8 sim=
+	total death among NCD patients DIA
+	~	person/Year
+	~		|
+
+initial population at risk of developing NCD[HTN]=
+	initial adult population[HTN]*(1-initial prevalence[HTN]) ~~|
+initial population at risk of developing NCD[DIA]=
+	initial adult population[DIA]*(1-initial prevalence[DIA])
+	~	person
+	~		|
+
+facilities in Amhara=
+	1051
+	~	facility
+	~		|
+
+reimbursements=
+	CBHI paid/facilities in Amhara
+	~	Birr/(Year*facility)
+	~		|
+
+DATA screened DIA:INTERPOLATE:
+	~	person/Year
+	~		|
+
+DATA screened HTN:INTERPOLATE:
+	~	person/Year
+	~		|
+
+DATA total CBHI beneficiaries:INTERPOLATE:
+	~	household
+	~		|
+
+DATA total death among enrolled DIA patients:INTERPOLATE:
+	~	person/Year
+	~		|
+
+DATA total death among enrolled HTN patients:INTERPOLATE:
+	~	person/Year
+	~		|
+
+DATA total nurse:INTERPOLATE:
+	~	provider
+	~		|
+
+DATA total fee waived beneficiaries:INTERPOLATE:
+	~	household
+	~		|
+
+DATA general practitioners:INTERPOLATE:
+	~	provider
+	~		|
+
+DATA health officers:INTERPOLATE:
+	~	provider
+	~		|
+
+initial providers=
+	50
+	~	provider
+	~		|
+
+DATA positive result for screened HTN:INTERPOLATE:
+	~	person/Year
+	~		|
+
+DATA early loss to follow up HTN:INTERPOLATE:
+	~	person/Year
+	~		|
+
+Total Providers= INTEG (
+	net change in provider availability,
+		initial providers)
+	~	provider
+	~		|
+
+DATA CBHI dropout:INTERPOLATE:
+	~	household/Year
+	~		|
+
+DATA positive result for screened DIA:INTERPOLATE:
+	~	person/Year
+	~		|
+
+DATA early loss to follow up DIA:INTERPOLATE:
+	~	person/Year
+	~		|
+
+DATA new CBHI beneficiaries:INTERPOLATE:
+	~	household/Year
+	~		|
+
+provider adjustment rate=
+	10
+	~	provider/Year
+	~		|
+
+base average fee per person=
+	3
+	~	Birr/person
+	~		|
+
+initial average annual IR=
+	500000
+	~	Birr/facility
+	~		|
+
+change time=
+	1
+	~	Year
+	~		|
+
+new people joining at risk population=
+	population adjustment
+	~	person/Year
+	~		|
+
+base NCD screening propensity[HTN]=
+	0.01 ~~|
+base NCD screening propensity[DIA]=
+	0.005
+	~	1/Year
+	~		|
+
+population adjustment=
+	400000
+	~	person/Year
+	~		|
+
+dropout rate=
+	0.01
+	~	1/Year
+	~		|
+
+base enrollment rate=
+	0.05
+	~	1/Year
+	~		|
+
+initial CBHI eligible unenrolled people=
+	2.51368e+06
+	~	household
+	~		|
+
+initial undiagnosed uncontrolled NCD[HTN]=
+	initial prevalent NCD[HTN]*(1-initial fraction in treatment[HTN]) ~~|
+initial undiagnosed uncontrolled NCD[DIA]=
+	initial prevalent NCD[DIA]*(1-initial fraction in treatment[DIA])
+	~	person
+	~		|
+
+initial diagnosed not controlled NCD[HTN]=
+	initial prevalent NCD[HTN]*initial fraction in treatment[HTN] ~~|
+initial diagnosed not controlled NCD[DIA]=
+	initial prevalent NCD[DIA]*initial fraction in treatment[DIA]
+	~	person
+	~		|
+
+NCD development rate[HTN]=
+	0.02 ~~|
+NCD development rate[DIA]=
+	0.01
+	~	1/Year
+	~	"Among 355,524 adults from Kaiser Permanente Southern California (mean age, 29 \
+		years; mean systolic/diastolic blood pressure, 115/70 mmHg), 11.7% \
+		developed hypertension in a median of 5.4 years" 
+		https://www.ahajournals.org/doi/10.1161/JAHA.124.040769
+	|
+
+base death rate=
+	0.0001
+	~	1/Year
+	~		|
+
+discontinuation rate[HTN]=
+	0.2 ~~|
+discontinuation rate[DIA]=
+	0.25
+	~	1/Year
+	~		|
+
+base medication restocking rate=
+	0.2
+	~	1/Year
+	~		|
+
+********************************************************
+	.Control
+********************************************************~
+		Simulation Control Parameters
+	|
+
+FINAL TIME  = 2027
+	~	Year
+	~	The final time for the simulation.
+	|
+
+INITIAL TIME  = 2007
+	~	Year
+	~	The initial time for the simulation.
+	|
+
+SAVEPER  = 
+        TIME STEP
+	~	Year [0,?]
+	~	The frequency with which output is stored.
+	|
+
+TIME STEP  = 0.125
+	~	Year [0,?]
+	~	The time step for the simulation.
+	|
+
+\\\---/// Sketch information - do not modify anything except names
+V300  Do not put anything below this section - it will be ignored
+*Model
+$0-0-0,0,Arial Unicode MS|18||0-0-0|0-0-0|0-0-255|255-255-255|255-255-255|96,96,38,2
+12,1,48,3631,-1394,37,21,8,131,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,2,3,1,4,0,0,22,1,192,0,0-0-0,|||0-0-0,1|(3631,-1259)|
+11,3,0,3631,-1135,15,11,33,131,0,0,4,0,0,0,0,0,0,0,0,0
+10,4,death of treated NCD patients,3723,-1135,100,32,40,131,0,10,-1,1,0,0,0-0-0,0-0-0,|18||128-64-0,0,0,0,0,0,0
+10,5,base medication restocking rate,7933,-1908,104,32,8,131,0,10,-1,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+10,6,death rate for untreated NCD,2912,-1771,96,32,8,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,7,ocm rate for treated,3307,-1467,77,32,8,131,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,8,CBHI beneficiaries,-34,-4723,324,387,3,131,0,10,-1,0,0,0,0-0-0,0-0-0,|18||255-0-0,0,0,0,0,0,0
+1,9,10,8,4,0,0,22,1,192,0,0-0-0,|||0-0-0,1|(-752,-4967)|
+11,10,0,-1169,-4967,23,29,34,3,0,0,3,0,0,0,0,0,0,0,0,0
+10,11,new enrollments,-1169,-5016,74,32,40,3,0,10,-1,1,0,0,0-0-0,0-0-0,|18||255-0-0,0,0,0,0,0,0
+10,12,Untreated NCD,1425,-750,465,301,3,131,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,13,14,12,100,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(2131,-902)|
+11,14,0,2395,-902,23,29,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,15,new enrollment into care,2395,-841,96,32,40,131,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,16,NCD screen rate,1254,745,79,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,17,16,108,0,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+10,18,People in informal sector not enrolled to CBHI,-2000,-4705,360,392,3,131,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-0-0,0,0,0,0,0,0
+1,19,10,18,100,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(-1416,-4967)|
+1,20,22,18,4,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(-1253,-4387)|
+1,21,22,8,100,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(-583,-4387)|
+11,22,0,-837,-4387,29,29,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,23,dropout,-837,-4351,48,17,40,3,0,10,-1,0,0,0,0-0-0,0-0-0,|18||255-0-0,0,0,0,0,0,0
+10,24,frac adult of pop with coverage,-1057,976,103,32,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,25,8,79,0,0,43,0,11,192,0,0-0-0,|18||0-0-0,1|(0,0)|
+12,26,48,1331,-1686,10,8,0,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,27,29,12,100,0,0,22,1,192,0,0-0-0,|||0-0-0,1|(1331,-1240)|
+1,28,29,26,4,0,0,22,1,192,0,0-0-0,|||0-0-0,1|(1331,-1571)|
+11,29,0,1331,-1447,20,17,33,131,0,0,2,0,0,0,0,0,0,0,0,0
+10,30,death of untreated NCD patients,1223,-1447,116,32,40,131,0,10,-1,1,0,0,0-0-0,0-0-0,|18||128-64-0,0,0,0,0,0,0
+1,31,12,29,1,2,0,0,1,192,0,0-0-0,|||0-0-0,1|(1239,-1332)|
+1,32,12,108,1,0,0,0,1,192,0,0-0-0,|||0-0-0,1|(994,-256)|
+1,33,8,22,0,2,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+1,34,18,11,1,2,0,0,1,128,0,0-0-0,|||0-0-0,1|(-1465,-5016)|
+10,35,discontinuation rate,2094,-412,96,32,8,3,0,10,-1,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+10,36,base death rate,-588,-1359,71,32,8,3,2,10,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+10,37,Treated NCD,3231,-764,456,299,3,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,38,14,37,4,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(2596,-902)|
+1,39,3,37,100,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(3631,-1093)|
+1,40,37,3,1,2,0,0,1,128,0,0-0-0,|||0-0-0,1|(3760,-1044)|
+10,41,Population at risk of developing NCD,-251,-740,460,298,3,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,42,44,12,4,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(814,-862)|
+1,43,44,41,100,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(415,-862)|
+11,44,0,645,-862,23,29,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,45,developing NCD,645,-813,69,32,40,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+12,46,48,-1140,-783,10,8,0,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,47,49,41,4,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(-784,-773)|
+1,48,49,46,100,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(-1140,-773)|
+11,49,0,-881,-773,23,29,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,50,new people joining at risk population,-881,-724,118,32,40,3,0,10,-1,0,0,0,0-0-0,0-0-0,|18||128-64-0,0,0,0,0,0,0
+1,51,41,45,1,2,0,0,1,128,0,0-0-0,|||0-0-0,1|(275,-571)|
+10,52,NCD development rate,645,-1100,110,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||128-64-0,0,0,0,0,0,0
+1,53,52,44,0,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+1,54,6,29,0,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+12,55,48,-235,-1469,10,8,0,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,56,58,55,4,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(-235,-1273)|
+1,57,58,41,100,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(-247,-1144)|
+11,58,0,-247,-1273,29,23,33,3,0,0,4,0,0,0,0,0,0,0,0,0
+10,59,death of at risk population,-148,-1273,95,32,40,3,0,10,-1,0,0,0,0-0-0,0-0-0,|18||128-64-0,0,0,0,0,0,0
+1,60,36,58,0,2,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+10,61,initial population at risk of developing NCD,-204,-231,146,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,62,61,41,0,0,0,0,1,128,1,0-0-0,|||0-0-0,1|(0,0)|
+10,63,initial undiagnosed uncontrolled NCD,251,-213,118,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,64,63,12,0,0,0,0,1,128,1,0-0-0,|||0-0-0,1|(0,0)|
+1,65,41,59,1,2,0,0,1,128,0,0-0-0,|||0-0-0,1|(-105,-1023)|
+1,66,67,12,4,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(2134,-581)|
+11,67,0,2393,-581,15,20,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,68,discontinuation from care,2393,-529,96,32,40,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,69,initial diagnosed not controlled NCD,559,73,127,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,70,69,37,0,0,0,0,1,128,1,0-0-0,|||0-0-0,1|(0,0)|
+1,71,35,739,0,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+10,72,total adult population 1,2119,5449,78,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||128-64-0,0,0,0,0,0,0
+10,73,Population at risk of developing NCD,1219,5281,134,32,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,74,Untreated NCD,1219,5479,71,32,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,75,Treated NCD,1221,5934,58,32,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,76,73,72,0,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+1,77,74,72,0,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+1,78,75,72,0,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+10,79,total adult population with coverage,-1956,-628,95,48,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,80,79,24,0,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+12,81,48,-3170,-4631,10,8,0,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,82,84,18,4,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(-2566,-4620)|
+1,83,84,81,100,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(-3170,-4620)|
+11,84,0,-2796,-4620,23,29,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,85,eligible population adjustment,-2796,-4571,114,32,40,131,0,10,-1,0,0,0,0-0-0,0-0-0,|18||128-64-0,0,0,0,0,0,0
+10,86,base enrollment rate,-1852,-5429,95,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+1,87,86,434,0,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+10,88,dropout rate,-617,-4118,78,16,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+1,89,88,23,0,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+10,90,initial CBHI beneficiaries,202,-4207,80,32,8,131,2,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,91,initial CBHI eligible unenrolled people,-2409,-5553,119,32,8,3,2,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,92,90,8,0,2,0,0,1,128,1,0-0-0,|||0-0-0,1|(0,0)|
+10,93,eff of health coverage on screening,1027,1152,79,48,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,94,initial health insurance coverage rate,-126,985,124,48,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,95,Fee waivered population with health coverage,-1939,-2832,449,329,3,131,0,10,-1,0,0,0,0-0-0,0-0-0,|18||255-0-0,0,0,0,0,0,0
+1,96,98,95,4,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(-2210,-3465)|
+1,97,98,18,100,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(-2210,-4064)|
+11,98,0,-2210,-3793,29,23,33,3,0,0,2,0,0,0,0,0,0,0,0,0
+10,99,fee waivered insurance coverage,-2333,-3793,124,32,40,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,100,95,79,0,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+10,101,initial fee waivered population,-2599,-2363,117,32,8,3,2,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,102,101,95,0,2,0,0,1,128,1,0-0-0,|||0-0-0,1|(0,0)|
+10,103,base NCD screening propensity,1797,941,72,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+1,104,103,873,0,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+1,105,93,16,0,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+10,106,base positive NCD fraction for screened people,1338,-186,130,48,8,131,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+1,107,106,857,0,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+10,108,people screened for NCD,1263,194,106,32,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,109,108,561,1,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(1724,193)|
+10,110,population adjustment,-881,-1003,70,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+1,111,110,49,0,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+10,112,Adjusted annual average revenue of facilities,6346,-4157,453,359,3,131,0,10,0,0,0,0,0-0-0,0-0-0,|18||128-64-0,0,0,0,0,0,0
+12,113,48,4783,-4323,10,8,0,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,114,116,112,4,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(5669,-4323)|
+1,115,116,113,100,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(5096,-4323)|
+11,116,0,5423,-4323,23,29,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,117,reimbursements,5423,-4260,40,49,40,131,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+12,118,48,8106,-4175,10,8,0,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,119,121,118,4,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(7763,-4175)|
+1,120,121,112,100,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(7091,-4175)|
+11,121,0,7407,-4175,23,29,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,122,expenditures,7407,-4101,168,45,40,131,0,10,-1,0,0,0,0-0-0,0-0-0,|18||128-64-0,0,0,0,0,0,0
+12,123,48,6373,-5060,10,8,0,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,124,126,112,4,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(6373,-4678)|
+1,125,126,123,100,0,0,22,1,0,0,0-0-0,|||0-0-0,1|(6373,-4969)|
+11,126,0,6373,-4863,29,23,33,3,0,0,4,0,0,0,0,0,0,0,0,0
+10,127,revenue from user fees,6463,-4863,83,32,40,3,0,10,-1,0,0,0,0-0-0,0-0-0,|18||128-64-0,0,0,0,0,0,0
+10,128,CBHI or fee waivered patient visits,5451,-5861,104,48,8,131,0,10,0,0,0,0,0-0-0,0-0-0,|18||128-64-0,0,0,0,0,0,0
+10,129,Treated NCD,7924,-7137,58,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,130,reimbursement requests from CBHIs,4925,-5567,133,32,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,131,128,130,0,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+10,132,average reimbursement delay,3903,-4932,133,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||128-64-0,0,0,0,0,0,0
+1,133,132,636,0,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+10,134,base average fee per person,6967,-4636,110,32,8,131,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+10,135,initial average annual IR,5965,-4735,88,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+10,136,population in HTN treatment,7447,-6954,114,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,137,129,136,0,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+10,138,CBHI paid,4447,-5103,66,16,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||128-64-0,0,0,0,0,0,0
+1,139,138,116,0,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+10,140,total NCD care demand pop,8586,-1015,95,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,141,change time,-1098,-4103,78,16,8,3,1,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,142,141,23,0,1,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+10,143,DATA screened HTN,-267,2863,98,32,8,3,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,144,DATA screened DIA,-254,3093,92,32,8,3,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,145,DATA positive result for screened HTN,-1052,6069,130,48,8,3,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,146,DATA positive result for screened DIA,-1089,6432,130,48,8,3,0,29,0,0,0,0,192-192-192,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,147,DATA total death among enrolled HTN patients,4177,3654,144,48,8,3,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,148,DATA total death among enrolled DIA patients,4177,4013,138,48,8,3,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,149,DATA early loss to follow up DIA,-861,4783,129,32,8,131,0,20,0,0,0,0,-1--1--1,192-192-192,||B|255-0-0,0,0,0,0,0,0
+10,150,DATA early loss to follow up HTN,-851,4426,129,32,8,3,0,20,0,0,0,0,-1--1--1,192-192-192,||B|255-0-0,0,0,0,0,0,0
+10,151,DATA new CBHI beneficiaries,1175,6779,112,32,8,3,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,152,DATA CBHI dropout,1217,6438,80,32,8,3,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,153,DATA total CBHI beneficiaries,943,7133,115,32,8,131,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,154,DATA total fee waived beneficiaries,963,7863,140,32,8,131,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,155,DATA health officers,4846,9245,87,32,8,131,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,156,DATA general practitioners,4520,9360,96,32,8,131,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,157,DATA total nurse,4522,9206,75,32,8,131,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,158,Total Providers,7700,1055,297,167,3,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+12,159,48,8411,1055,24,14,8,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,160,162,158,4,0,0,22,0,0,0,-1--1--1,,1|(8098,1055)|
+1,161,162,159,100,0,0,22,0,0,0,-1--1--1,,1|(8301,1055)|
+11,162,0,8208,1055,8,14,34,131,0,0,1,0,0,0,0,0,0,0,0,0
+10,163,net change in provider availability,8208,1092,117,32,40,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,164,initial providers,7182,1075,59,32,8,3,1,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,165,provider adjustment rate,8380,1208,99,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+1,166,164,158,0,1,0,0,1,128,1,0-0-0,|||0-0-0,1|(0,0)|
+1,167,165,163,0,0,0,0,1,128,0,0-0-0,|||0-0-0,1|(0,0)|
+10,168,initial essential medicine availability,6270,-1664,127,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,169,facilities in Amhara,5089,7944,67,32,8,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,170,HTN screen effort,-2594,2815,76,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,171,DIA screen effort,-2594,3049,72,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,172,p1 data,-1365,2810,48,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,173,p1 sim,-2063,2810,42,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,174,p2 data,-1365,3059,48,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,175,p2 sim,-2051,3057,42,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,176,170,173,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,177,171,175,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,178,p1,-1681,2815,17,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,179,173,178,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,180,172,178,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,181,p2,-1681,3055,17,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,182,175,181,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,183,174,181,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,184,total payoff,223,5258,70,16,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,185,178,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,186,181,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,187,p7 sim,2810,3654,42,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,188,p8 sim,2810,4013,42,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,189,p7 data,3500,3654,48,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,190,147,189,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,191,p7,3192,3654,17,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,192,p8,3192,4013,17,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,193,187,191,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,194,189,191,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,195,188,192,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,196,total death among NCD patients HTN,2166,3665,118,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,197,total death among NCD patients DIA,2171,3995,115,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,198,196,187,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,199,197,188,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,200,191,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,201,192,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,202,DATA new fee waived beneficiaries,958,7467,140,32,8,3,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,203,DATA inflation conversion multiplier for 2017 birr value,5718,6085,148,48,8,3,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,204,DATA CBHI membership cost per household,1464,-4227,148,48,8,3,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,205,DATA CBHI collected fees,5307,6355,95,32,8,131,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,206,DATA CBHI targeted households,-3598,-4921,82,48,8,3,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,207,DATA Amhara total population 30 yo plus,4282,5649,149,32,8,3,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,208,DATA Amhara total deaths 30 yo plus,4217,4663,133,32,8,3,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,209,new fee waiver rate,-2375,-3607,94,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+1,210,18,98,1,0,0,0,0,128,0,-1--1--1,,1|(-2285,-4031)|
+1,211,209,99,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,212,214,18,4,0,0,22,0,0,0,-1--1--1,,1|(-1889,-4055)|
+1,213,214,95,100,0,0,22,0,0,0,-1--1--1,,1|(-1889,-3459)|
+11,214,0,-1889,-3777,26,20,33,3,0,0,4,0,0,0,0,0,0,0,0,0
+10,215,fee waiver enrollment change,-1774,-3777,117,32,40,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,216,fee waiver adjustment rate,-1347,-3764,99,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+1,217,95,215,1,0,0,0,0,128,0,-1--1--1,,1|(-1663,-3120)|
+1,218,216,215,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,219,implied eligible households not enrolled,-2803,-4925,97,48,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,220,219,84,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,221,CBHI beneficiaries,-2518,-5187,89,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,222,Fee waivered population with health coverage,-3098,-5592,138,48,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,223,221,219,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,224,household adjustment time,-3499,-4522,101,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,225,224,85,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,226,18,84,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,227,DATA new CBHI beneficiaries,-1200,-4709,120,32,8,130,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,228,DATA CBHI dropout,-861,-3894,89,32,8,130,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,229,DATA total CBHI beneficiaries,830,-5404,123,32,8,130,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,230,DATA total fee waived beneficiaries,-1747,-2351,108,48,8,130,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,231,DATA new fee waived beneficiaries,-2564,-3987,105,48,8,2,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,232,dropout,-837,6446,40,33,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,233,new enrollments,-853,6745,82,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,234,fee waivered insurance coverage,-850,7407,133,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,235,Fee waivered population with health coverage,-897,7827,138,48,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,236,CBHI beneficiaries,-839,7096,89,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,237,p9 sim,-212,6432,42,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,238,p9 data,520,6432,48,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,239,p9,176,6438,17,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,240,237,239,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,241,238,239,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,242,p10 sim,-245,6751,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,243,p10 data,523,6779,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,244,p10,176,6775,25,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,245,242,244,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,246,243,244,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,247,p11 sim,-226,7097,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,248,p11 data,540,7130,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,249,p11,176,7117,25,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,250,247,249,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,251,248,249,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,252,p12 sim,-218,7472,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,253,p12 data,572,7461,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,254,p12,176,7449,25,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,255,252,254,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,256,253,254,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,257,p13 sim,-212,7846,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,258,p13 data,603,7855,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,259,p13,176,7846,25,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,260,257,259,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,261,258,259,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,262,232,237,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,263,233,242,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,264,236,247,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,265,234,252,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,266,235,257,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,267,152,238,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,268,151,243,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,269,153,248,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,270,202,253,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,271,154,258,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,272,239,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,273,244,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,274,249,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,275,254,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,276,259,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,277,total adult population 2,2081,5873,78,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||128-64-0,0,0,0,0,0,0
+1,278,73,277,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,279,74,277,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,280,75,277,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,281,avg adult pop per household,-2646,-636,110,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,282,281,79,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,283,frac adult of pop with coverage,6296,-5715,111,32,8,130,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,284,p8 data,3507,4009,48,17,8,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,285,284,192,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,286,148,284,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,287,death of untreated NCD patients,761,4857,124,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,288,death of at risk population,2504,4381,103,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,289,death among undiag NCD patients HTN,1587,4472,130,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,290,death among undiag NCD patients DIA,1611,4857,130,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,291,287,289,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,292,287,290,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,293,total deaths,2197,4678,75,16,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,294,196,293,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,295,197,293,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,296,289,293,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,297,290,293,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,298,288,293,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,299,DATA Amhara total population 30 yo plus,-1645,975,141,48,8,130,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,300,p14 sim,2691,4638,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,301,p14 data,3613,4645,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,302,p14,3166,4645,25,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,303,300,302,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,304,301,302,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,305,293,300,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,306,208,301,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,307,p15 sim,2684,5448,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,308,p15 data,3726,5464,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,309,p15,3248,5437,25,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,310,307,309,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,311,308,309,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,312,72,307,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,313,207,308,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,314,p17 sim,-2353,5409,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,315,p17 data,-1431,5421,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,316,p17,-1813,5421,25,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,317,314,316,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,318,315,316,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,319,p16 sim,2639,5901,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,320,p16 data,3666,5884,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,321,p16,3233,5884,25,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,322,319,321,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,323,320,321,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,324,277,319,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,325,p18 sim,-2371,5781,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,326,p18 data,-1448,5763,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,327,p18,-1793,5764,25,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,328,325,327,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,329,326,327,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,330,302,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,331,309,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,332,321,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,333,total diagnosed HTN patients in tx,-2839,5407,113,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,334,total diagnosed DIA patients in tx,-2813,5774,109,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,335,333,314,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,336,334,325,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,337,207,320,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,338,316,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,339,327,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,340,base death rate,2900,-1571,80,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,341,340,6,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,342,relative death risk for NCD,2911,-1981,86,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,343,342,6,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,344,treated NCD death risk relative to untreated,3695,-1730,120,48,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,345,6,7,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,346,344,7,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,347,DATA total revolving drug funds,4671,-2487,102,48,8,131,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,348,DATA total facility internal revenue,6224,7230,124,32,8,131,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,349,DATA total utilized internal revenue,6264,7625,129,32,8,131,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,350,DATA total CBHI reimbursements requested,6182,8637,115,48,8,131,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,351,DATA total CBHI reimbursements,6148,8237,115,32,8,131,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,352,DATA health service utilization per capita,7677,-5540,141,32,8,131,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,353,Time,-1745,3377,48,17,8,2,1,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,354,353,178,0,1,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,355,353,181,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,356,353,327,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,357,Time,182,8165,48,17,8,2,1,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,358,357,259,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,359,357,254,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,360,357,249,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,361,357,244,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,362,357,239,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,363,Time,3318,5054,48,17,8,130,1,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,364,363,309,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,365,363,321,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,366,363,302,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,367,363,192,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,368,363,191,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,369,24,94,0,0,0,0,0,128,1,-1--1--1,,1|(0,0)|
+12,370,0,9149,3118,676,608,3,188,0,8,1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+GRAPH_7
+12,371,0,10577,3079,676,608,3,188,0,8,1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+GRAPH_8
+12,372,0,12060,3091,676,608,3,188,0,8,1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+GRAPH_9
+12,373,0,13544,3096,676,608,3,188,0,8,1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+GRAPH_10
+12,374,0,6234,4421,676,608,3,188,0,8,1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+GRAPH_11
+12,375,0,7692,4394,676,608,3,188,0,8,1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+GRAPH_12
+12,376,0,9151,4377,676,608,3,188,0,8,1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+GRAPH_13
+12,377,0,10594,4372,676,608,3,188,0,8,1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+GRAPH_14
+1,378,204,457,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,379,DATA adjusted total revolving drug funds,5439,-2670,128,32,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,380,347,379,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,381,DATA adjusted total facility internal revenue,5304,7230,146,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,382,203,381,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,383,348,381,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,384,DATA adjusted total utilized internal revenue,5340,7579,150,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,385,DATA adjusted total CBHI reimbursements requested,5363,8548,140,48,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,386,203,384,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,387,203,385,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,388,349,384,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,389,350,385,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,390,DATA adjusted CBHI reimbursements,5383,8213,102,48,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,391,351,390,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,392,adjusted total CBHI collected fees,1464,-5243,124,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,393,DATA avg adjusted total facility internal revenue,4333,7248,123,48,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,394,381,393,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,395,169,393,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,396,total adult population with coverage,5439,-6761,95,48,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,397,initial population with coverage,5447,-6581,103,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,398,other health service utilization,6445,-6188,109,32,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+1,399,396,397,0,0,0,0,0,128,1,-1--1--1,,1|(0,0)|
+10,400,eff of coverage on service utilization,5919,-6572,114,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||251-2-255,0,0,0,0,0,0
+10,401,CBHI revenue,2916,-5667,287,159,3,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+12,402,48,2192,-5659,10,8,0,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,403,405,401,4,0,0,22,0,0,0,-1--1--1,,1|(2544,-5659)|
+1,404,405,402,100,0,0,22,0,0,0,-1--1--1,,1|(2311,-5659)|
+11,405,0,2440,-5659,20,26,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,406,collected fees and subsidies,2440,-5612,88,32,40,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,407,392,406,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,408,DATA inflation conversion multiplier for 2017 birr value,1063,-4501,148,48,8,2,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+1,409,408,457,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,410,DATA adjusted total CBHI collected fees,4398,6453,128,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,411,205,410,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+12,412,48,3771,-5657,10,8,0,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,413,415,412,4,0,0,22,0,0,0,-1--1--1,,1|(3611,-5657)|
+1,414,415,401,100,0,0,22,0,0,0,-1--1--1,,1|(3312,-5657)|
+11,415,0,3442,-5657,20,26,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,416,CBHI reimbursements approved,3442,-5598,102,48,40,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,417,initial CBHI revenue,2839,-5967,71,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+1,418,417,401,0,0,0,0,0,128,1,-1--1--1,,1|(0,0)|
+10,419,initial perceived benefit,-33,-5776,98,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,420,relative benefit,-366,-5776,46,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,421,419,420,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,422,eff of perceived benefit on enrollment,-1158,-5802,133,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,423,420,422,1,0,0,0,0,128,0,-1--1--1,,1|(-749,-5890)|
+10,424,strength of perceived benefit,-1157,-6128,108,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+1,425,424,422,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,426,422,434,1,0,0,0,0,128,0,-1--1--1,,1|(-1295,-5656)|
+10,427,strength coverage on screen,535,1142,115,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+1,428,427,93,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,429,relative coverage rate,-121,1402,87,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,430,94,429,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,431,24,429,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,432,429,93,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,433,DATA total facility revenue,6234,6730,105,32,8,131,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,434,implied enrollment rate,-1361,-5415,95,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,435,434,11,1,0,0,0,0,128,0,-1--1--1,,1|(-1335,-5207)|
+10,436,strategy to increase enrollments,-885,-5227,74,48,8,3,0,12,0,0,0,0,-1--1--1,185-240-189,|18||0-0-0,0,0,0,0,0,0
+10,437,enrollment strategy start year,-927,-5452,116,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,438,437,436,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,439,enrollment strategy strength,-629,-5328,108,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,440,439,436,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,441,DATA adjusted total facility revenue,5353,6753,128,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,442,433,441,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,443,203,441,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,444,DATA avg adjusted total public funding,4322,6768,123,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,445,169,444,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,446,441,444,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,447,DATA initial screened DIA,-252,3370,87,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,448,144,447,0,0,0,0,0,128,1,-1--1--1,,1|(0,0)|
+10,449,DATA screening effort relative to initial DIA,-801,3059,140,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,450,447,449,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,451,144,449,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,452,DATA initial screened HTN,-276,2579,92,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,453,DATA screening effort relative to initial HTN,-809,2829,140,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,454,452,453,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,455,143,452,0,0,0,0,0,128,1,-1--1--1,,1|(0,0)|
+1,456,143,453,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,457,DATA adjusted membership cost per household,1458,-4722,133,48,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,458,8,392,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,459,457,392,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,460,adjusted total CBHI collected fees,2108,6475,134,32,8,130,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,461,p19 sim,2831,6477,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,462,p19 data,3651,6465,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,463,p19,3234,6475,25,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,464,461,463,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,465,462,463,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,466,410,462,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,467,460,461,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,468,363,463,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,469,population in DIA treatment,7355,-7295,109,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,470,129,469,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,471,283,814,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,472,uninsured patient visits,6764,-5465,80,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,473,283,472,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,474,472,127,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,475,total internal revenue,1931,7785,79,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,476,reimbursements,1687,7730,40,49,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,477,revenue from user fees,1663,7850,92,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,478,476,475,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,479,477,475,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,480,DATA avg adjusted total utilized internal revenue,4357,7598,127,48,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,481,384,480,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,482,169,480,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,483,p20 data,3608,6777,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,484,p21 sim,2801,7270,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,485,p21 data,3625,7260,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,486,p21,3233,7269,25,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,487,484,486,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,488,485,486,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,489,393,485,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,490,363,486,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,491,facilities in Amhara,6965,-3509,75,32,8,2,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,492,491,117,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,493,491,127,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,494,491,122,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,495,203,390,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,496,DATA avg adjusted CBHI reimbursements,4381,8259,140,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,497,390,496,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,498,169,496,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,499,463,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,500,486,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,501,203,410,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,502,DATA inflation conversion multiplier for 2017 birr value,4674,-2736,148,48,8,2,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+1,503,502,379,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,504,436,11,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,505,strategy to increase fee waivers,-2841,-3803,78,48,8,3,0,12,0,0,0,0,-1--1--1,185-240-189,|18||0-0-0,0,0,0,0,0,0
+10,506,fee waiver strategy start year,-2839,-4007,116,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,507,506,505,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,508,fee waiver strategy strength,-2821,-3624,108,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,509,508,505,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,510,505,99,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,511,p22 sim,2801,7610,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,512,p22 data,3625,7596,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,513,p22,3233,7606,25,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,514,511,513,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,515,512,513,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,516,p24 sim,2799,8294,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,517,p24 data,3615,8281,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,518,p24,3229,8289,25,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,519,516,518,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,520,517,518,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,521,reimbursements,2059,8289,40,49,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,522,521,516,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,523,496,517,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,524,DATA avg adjusted total unutilized internal revenue,4097,7887,142,48,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,525,p23 sim,3006,7947,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,526,p23 data,3599,7953,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,527,524,526,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,528,480,512,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,529,363,513,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,530,363,518,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,531,513,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,532,518,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,533,480,524,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,534,393,524,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+12,535,0,7698,5676,676,608,3,188,0,8,1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+GRAPH_19
+12,536,0,9134,5649,676,608,3,188,0,8,1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+GRAPH_21
+12,537,0,10587,5669,676,608,3,188,0,8,1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+GRAPH_22
+12,538,0,11975,5655,676,608,3,188,0,8,1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+GRAPH_23
+12,539,0,13472,5690,676,608,3,188,0,8,1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+GRAPH_24
+10,540,switch to set zero,5023,-3639,80,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||251-2-7,0,0,0,0,0,0
+10,541,DATA health service utilization per capita,4437,8841,149,32,8,130,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+1,542,444,483,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,543,p25 sim,2814,8545,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,544,p25 data,3633,8538,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,545,p25,3243,8544,25,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,546,543,545,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,547,544,545,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,548,reimbursement requests from CBHIs,2108,8561,141,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,549,548,543,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,550,385,544,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,551,363,545,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,552,unutilized internal revenue,2895,7819,102,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,553,552,525,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,554,p26 sim,2725,8837,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,555,p26 data,3666,8834,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,556,p26,3233,8837,25,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,557,554,556,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,558,555,556,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,559,541,555,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,560,363,556,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,561,people screened positive for NCD,2059,-185,106,32,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,562,561,15,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,563,449,174,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,564,453,172,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,565,545,184,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,566,556,184,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,567,time to enroll,-1645,-4230,44,32,8,3,1,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,568,567,11,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,569,141,215,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,570,567,99,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,571,transition time,100,-1091,90,16,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,572,571,58,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,573,571,44,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,574,571,30,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,575,transition time,3435,-1143,67,32,8,2,1,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,576,575,68,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,577,575,3,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,578,575,15,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,579,12,15,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,580,DATA total providers,4283,9284,70,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,581,156,580,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,582,p27 sim,2735,9279,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,583,p27 data,3677,9271,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,584,p27,3243,9272,25,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,585,582,584,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,586,583,584,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,587,Total Providers,2096,9269,68,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,588,587,582,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,589,580,583,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,590,584,184,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,591,initial demand for medications,8458,-1104,108,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,592,140,591,0,0,0,0,0,128,1,-1--1--1,,1|(0,0)|
+10,593,change in demand for medications,8246,-1014,117,32,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,594,591,593,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,595,140,593,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,596,base medication utilization rate,7964,-733,104,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+1,597,593,600,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,598,implied medication restocking,7626,-1914,118,32,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,599,598,769,1,0,0,0,0,128,0,-1--1--1,,1|(7592,-1773)|
+10,600,implied medication utilization rate,7971,-903,118,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,601,600,766,1,0,0,0,0,128,0,-1--1--1,,1|(7763,-1040)|
+10,602,DATA Amhara total population 30 yo plus,7153,-5797,144,32,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,603,revenue utilization time,7920,-3836,91,32,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,604,603,122,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,605,112,122,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,606,Time,3654,9534,48,17,8,2,1,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,607,606,583,0,1,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,608,606,555,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,609,606,544,0,1,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,610,606,517,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,611,606,526,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,612,606,512,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,613,606,485,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,614,606,483,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,615,606,462,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,616,363,320,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,617,363,308,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,618,363,301,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,619,363,284,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,620,363,189,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,621,357,258,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,622,357,253,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,623,357,248,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,624,357,243,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,625,357,238,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,626,353,172,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,627,353,174,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,628,353,326,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,629,Fraction in treatment,2440,239,239,239,2,131,0,10,0,0,0,0,0-0-0,0-0-0,|26||255-0-0,0,0,0,0,0,0
+1,630,12,629,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,631,strategy to decrease reimbursement delay,3347,-5069,133,32,8,3,0,12,0,0,0,0,-1--1--1,185-240-189,|18||0-0-0,0,0,0,0,0,0
+10,632,delay reduction strategy start year,3015,-5073,116,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,633,632,631,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,634,delay reduction strategy strength,3347,-4934,108,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,635,634,631,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,636,implied delay,3903,-5067,83,16,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,637,631,636,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,638,636,138,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,639,revenue utilization time,3248,-5343,99,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,640,639,416,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,641,401,415,1,0,0,0,0,128,0,-1--1--1,,1|(3311,-5765)|
+1,642,206,219,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,643,299,24,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,644,eff of health coverage on screening,-3646,2937,83,48,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,645,Prevalence,2470,927,75,30,0,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||255-0-0,0,0,0,0,0,0
+1,646,12,645,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,647,total adult population 1,2235,1289,86,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,648,647,645,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,649,total adult population 2,2660,1287,86,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,650,649,645,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,651,DATA Essential medication availability HTN,4888,9740,109,48,8,3,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,652,DATA Essential medication availability DIA,4888,10030,107,48,8,3,0,29,0,0,0,0,192-192-192,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,653,DATA Essential medication availability avg,4247,9953,139,48,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,654,651,653,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,655,652,653,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,656,p28 sim,2791,9986,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,657,p28 data,3733,9985,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,658,p28,3298,9985,25,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,659,656,658,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,660,657,658,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,661,653,657,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,662,606,657,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,663,606,658,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,664,658,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,665,606,584,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,666,p3 data,-1442,3469,48,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,667,p3 sim,-2136,3469,42,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,668,p4 data,-1442,3717,48,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,669,p4 sim,-2126,3715,42,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,670,p3,-1755,3475,17,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,671,667,670,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,672,666,670,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,673,p4,-1755,3713,17,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,674,669,673,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,675,668,673,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,676,353,673,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,677,353,670,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,678,Prevalence,-3069,3581,40,49,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,679,Prevalence HTN,-2640,3488,71,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,680,Prevalance DIA,-2625,3722,71,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,681,678,679,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,682,678,680,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,683,679,667,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,684,680,669,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,685,Point DATA Prevalence HTN,-961,3444,103,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,686,Point DATA Prevalance DIA,-949,3735,99,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,687,685,666,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,688,686,668,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,689,353,668,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,690,353,666,0,1,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,691,670,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,692,673,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,693,41,108,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,694,DATA newly enrolled HTN,-978,5425,92,32,8,3,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,695,DATA newly enrolled DIA,-1044,5778,86,32,8,3,0,29,0,0,0,0,192-192-192,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+1,696,694,315,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,697,695,326,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,698,new enrollment into care,-3349,5599,105,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,699,698,333,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,700,698,334,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,701,DATA Essential medication availability avg,5621,-1671,139,48,8,2,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,702,701,168,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,703,67,37,100,0,0,22,0,0,0,-1--1--1,,1|(2591,-581)|
+1,704,37,68,1,0,0,0,0,128,0,-1--1--1,,1|(2708,-513)|
+10,705,death of treated NCD patients,1839,3812,109,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,706,705,196,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,707,705,197,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,708,7,4,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,709,facilities in Amhara,7176,1344,75,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,710,provider per facility,7486,1344,76,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,711,709,710,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,712,158,710,1,0,0,0,0,128,0,-1--1--1,,1|(7488,1258)|
+10,713,max provider per facility,8204,1425,81,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-0-255,0,0,0,0,0,0
+10,714,provider gap,7883,1430,79,16,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,715,713,714,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,716,710,714,1,0,0,0,0,128,0,-1--1--1,,1|(7621,1548)|
+1,717,714,163,1,0,0,0,0,128,0,-1--1--1,,1|(8075,1311)|
+1,718,713,163,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,719,new enrollment into care,8478,-6860,105,32,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,720,annual health service utilization per NCD patient,6495,-7131,135,48,8,131,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-0-255,0,0,0,0,0,0
+10,721,NCD related service utilization,6829,-6580,109,32,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,722,NCD screening related service utilization,7489,-6608,97,48,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,723,active patient NCD related service utilization,6847,-6872,120,48,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,724,469,723,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,725,136,723,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,726,720,723,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,727,new utilization for HTN screen,7918,-6468,110,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,728,new utilization for DIA screen,7890,-6715,110,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,729,728,722,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,730,727,722,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,731,723,721,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,732,722,721,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,733,people screened for NCD,8316,-6612,114,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,734,596,600,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,735,5,598,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,736,TIME STEP,-1939,3609,45,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,737,736,673,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,738,736,670,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,739,implied discontinuation rate,2392,-409,124,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,740,739,68,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,741,fraction allocated to RDF,5264,-3242,108,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-0-255,0,0,0,0,0,0
+1,742,128,744,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,743,472,744,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,744,total visits,7149,-4956,64,16,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,745,744,121,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,746,total service utilization per capita,7163,-5478,127,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,747,total service utilization per capita,2051,8825,135,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,748,747,554,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,749,adjusted annual average RDF,5551,-3235,101,32,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,750,117,749,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,751,741,749,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,752,127,749,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,753,avg adjusted total revolving drug funds,5348,-2951,128,32,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,754,491,753,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,755,379,753,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,756,753,749,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,757,134,126,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,758,initial avg adjusted total revolving drug funds,5837,-2740,120,48,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,759,relative avg adjusted total revolving drug funds,6207,-2943,131,48,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,760,758,759,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,761,Facilities with medication,7237,-1467,287,287,3,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,762,Facilities without medication,8262,-1447,274,301,3,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,763,765,762,4,0,0,22,0,0,0,-1--1--1,,1|(7874,-1311)|
+1,764,765,761,100,0,0,22,0,0,0,-1--1--1,,1|(7629,-1311)|
+11,765,0,7748,-1311,13,17,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,766,stock out rate,7748,-1285,87,16,40,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,767,769,761,4,0,0,22,0,0,0,-1--1--1,,1|(7635,-1623)|
+1,768,769,762,100,0,0,22,0,0,0,-1--1--1,,1|(7880,-1623)|
+11,769,0,7759,-1623,13,17,34,3,0,0,1,0,0,0,0,0,0,0,0,0
+10,770,restocking rate,7759,-1584,66,32,40,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,771,facilities in Amhara,6764,-1645,75,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,772,initial facilities with medication,6764,-1456,117,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,773,168,772,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,774,771,772,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,775,772,761,0,0,0,0,0,128,1,-1--1--1,,1|(0,0)|
+10,776,initial facilities without medication,6769,-1840,118,32,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,777,776,762,0,0,0,0,0,128,1,-1--1--1,,1|(0,0)|
+1,778,168,776,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,779,771,776,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,780,essential medication availability,6994,-893,69,48,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,781,761,780,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,782,762,780,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,783,759,598,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,784,762,769,1,0,0,0,0,128,0,-1--1--1,,1|(8042,-1691)|
+1,785,761,766,1,0,0,0,0,128,0,-1--1--1,,1|(7539,-1226)|
+10,786,essential medication availability,2094,9974,74,48,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,787,786,656,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,788,facility stock adjustment time,7689,-1437,101,32,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,789,788,770,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,790,788,766,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,791,base average care cost per person,7609,-4367,118,32,8,131,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+1,792,791,121,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,793,602,472,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,794,749,758,0,0,0,0,0,128,1,-1--1--1,,1|(0,0)|
+1,795,749,759,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,796,95,219,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,797,130,416,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,798,416,138,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,799,uninsured service utilization per capita,6764,-5942,127,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,800,398,799,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,801,799,472,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,802,602,814,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,803,insured service utilization per capita,5925,-6408,127,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,804,400,803,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,805,398,803,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,806,803,128,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,807,744,746,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,808,602,746,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,809,NCD related service utilization per capita,6827,-6402,128,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,810,602,809,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,811,721,809,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,812,809,803,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,813,809,799,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,814,adult pop with coverage,5977,-5840,89,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,815,814,128,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,816,more weight on confidence data,1097,8441,104,58,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,817,816,249,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,818,p25 data,4887,-5497,73,16,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,819,household size adj for fees,1653,-5062,95,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+1,820,819,392,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,821,percent enrolled in CBHI,-24,-5411,103,48,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,822,DATA CBHI targeted households,196,-4021,90,48,8,2,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,823,initial CBHI eligible not enrolled,-173,-4131,119,32,8,3,2,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,824,823,18,0,0,0,0,0,128,1,-1--1--1,,1|(0,0)|
+1,825,822,90,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,826,net enrollment rate in 2007,-199,-4251,91,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,827,826,90,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,828,826,823,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,829,822,823,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,830,partial cal switch,219,5039,62,32,8,131,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,831,830,184,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,832,DATA newly enrolled HTN,2312,-1480,100,32,8,2,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,833,DATA newly enrolled DIA,2525,-1484,94,32,8,2,0,29,0,0,0,0,192-192-192,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,834,DATA positive result for screened HTN,2281,-1381,130,48,8,2,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,835,DATA positive result for screened DIA,2558,-1379,130,48,8,2,0,29,0,0,0,0,192-192-192,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,836,DATA tx enrollment rate post screening,2419,-1262,123,32,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,837,833,836,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,838,835,836,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,839,832,836,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,840,834,836,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,841,base tx enrollment rate post screening,2140,-1017,122,32,8,131,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+1,842,841,1146,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,843,population cal weight,3000,5614,89,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,844,843,309,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,845,843,321,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,846,37,629,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,847,37,645,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,848,Treated NCD,8872,-1031,58,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,849,848,140,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,850,fraction not in treatment,1899,533,86,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,851,629,850,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,852,initial fraction not in treatment,1559,546,108,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,853,relative untreated NCD,1699,394,96,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,854,852,853,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,855,850,853,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,856,850,852,0,0,0,0,0,128,1,-1--1--1,,1|(0,0)|
+10,857,implied positive screening rate,1681,-185,97,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,858,853,857,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,859,857,561,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,860,strategy to increase reimbursement,3999,-5864,126,32,8,3,0,12,0,0,0,0,-1--1--1,185-240-189,|18||0-0-0,0,0,0,0,0,0
+10,861,reimbursement strategy start year,4080,-6034,116,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,862,861,860,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,863,reimbursement strategy strength,3866,-5973,108,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,864,863,860,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,865,implied CBHI reimbursement approval fraction,3569,-5852,105,48,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+1,866,865,415,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,867,860,865,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,868,screening promotion strategy,1567,1183,102,32,8,131,0,12,0,0,0,0,-1--1--1,185-240-189,|18||0-0-0,0,0,0,0,0,0
+10,869,screen strategy start year,1494,1295,99,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,870,869,868,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,871,screen strategy strength,1720,1300,99,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,872,871,868,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,873,implied screening propensity,1570,950,92,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,874,868,873,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,875,873,16,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,876,strategy to increase provider capacity,9089,1423,126,32,8,3,0,12,0,0,0,0,-1--1--1,185-240-189,|18||0-0-0,0,0,0,0,0,0
+10,877,provider strategy start year,9089,1565,107,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,878,877,876,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,879,provider number strategy strength,9085,1287,107,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,880,879,876,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,881,strategy to increase restocking,7616,-2126,124,32,8,131,0,12,0,0,0,0,-1--1--1,185-240-189,|18||0-0-0,0,0,0,0,0,0
+10,882,restock strategy start year,7443,-2340,103,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,883,882,881,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,884,restock strategy strength,7755,-2350,103,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,885,884,881,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,886,876,713,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,887,881,598,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,888,p5 sim,-2089,4383,42,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,889,p5 data,-1166,4394,48,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,890,p5,-1549,4394,17,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,891,888,890,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,892,889,890,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,893,p6 sim,-2107,4754,42,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,894,p6 data,-1183,4761,48,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,895,p6,-1524,4737,17,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,896,893,895,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,897,894,895,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,898,early loss to follow up HTN,-2575,4381,89,32,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,899,early loss to follow up DIA,-2550,4773,84,32,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,900,898,888,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,901,899,893,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,902,Time,-1431,5460,48,17,8,2,1,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,903,902,315,0,1,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,904,Time,-1813,5462,48,17,8,2,1,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,905,904,316,0,1,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,906,150,889,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,907,149,894,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,908,discontinuation from care,-3313,4754,104,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,909,fraction discont early,-3284,4437,97,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,910,early discont,-2963,4633,81,16,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,911,909,910,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,912,908,910,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,913,910,898,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,914,910,899,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,915,890,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,916,895,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,917,Time,-1166,4432,48,17,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,918,917,889,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,919,Time,-1183,4799,48,17,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,920,919,894,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,921,DATA general subsidies,2564,-4920,96,32,8,3,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,922,DATA inflation conversion multiplier for 2017 birr value,2166,-4880,148,48,8,2,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,923,DATA adjusted subsidies,2351,-5077,96,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,924,922,923,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,925,921,923,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,926,adjusted subsidies,2311,-5238,60,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,927,subsidy fraction,2596,-5255,49,32,8,3,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+1,928,927,926,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,929,926,406,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,930,p29 sim,2807,6302,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,931,p29 data,3626,6294,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,932,p29,3210,6300,25,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,933,930,932,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,934,931,932,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,935,adjusted subsidies,2507,6302,69,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,936,DATA adjusted subsidies,3892,6331,105,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,937,935,930,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,938,936,931,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,939,Time,3637,6356,48,17,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,940,939,931,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,941,Time,3222,6355,48,17,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,942,941,932,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,943,932,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,944,Time,-1549,4433,48,17,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,945,944,890,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,946,Time,-1524,4777,48,17,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,947,946,895,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,948,p30 sim,-2309,6049,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,949,p30 data,-1387,6059,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,950,p30,-1769,6060,25,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,951,948,950,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,952,949,950,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,953,p31 sim,-2326,6421,50,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,954,p31 data,-1408,6428,55,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,955,p31,-1747,6403,25,17,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,956,953,955,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,957,954,955,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,958,people screened positive for HTN,-2794,6046,125,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,959,people screened positive for DIA,-2770,6437,125,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,960,958,948,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,961,959,953,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,962,146,954,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,963,145,949,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,964,people screened positive for NCD,-3258,6237,114,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,965,964,958,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,966,964,959,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,967,950,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,968,955,184,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,969,Time,-1387,6097,48,17,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,970,969,949,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,971,Time,-1408,6465,48,17,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,972,971,954,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,973,Time,-1743,6174,48,17,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,974,973,950,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,975,Time,-1745,6297,48,17,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,976,975,955,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,977,alpha,8005,362,35,17,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,978,beta,3348,-5194,29,17,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,979,beta,4332,-5862,45,17,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,980,979,860,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,981,978,631,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,982,beta,7605,-2497,45,17,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,983,982,881,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,984,beta,9349,1345,45,17,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,985,beta,1781,1181,45,17,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,986,985,868,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,987,DATA Amhara total population 30 yo plus,8550,796,144,32,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,988,DATA total providers,8088,957,78,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,989,care capacity per capita,8170,793,85,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,990,987,989,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,991,158,989,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,992,DATA Essential medication availability HTN,6808,-1163,139,48,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,993,DATA Essential medication availability DIA,6804,-1277,139,48,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,994,capacity utilization,6897,323,60,32,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,995,demand fulfilment ratio,6595,-537,89,32,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,996,392,926,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,997,18,821,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,998,8,821,1,0,0,0,0,128,0,-1--1--1,,1|(238,-5263)|
+1,999,821,420,1,0,0,0,0,128,0,-1--1--1,,1|(-110,-5617)|
+1,1000,821,419,0,0,0,0,0,128,1,-1--1--1,,1|(0,0)|
+1,1001,733,728,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1002,733,727,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1003,reference utilization per capita,6435,-5986,123,32,8,3,0,10,-1,0,0,0,0-0-0,0-0-0,|18||253-128-8,0,0,0,0,0,0
+10,1004,care capacity per capita,5941,-6051,94,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,1005,access multiplier,6178,-6175,57,32,8,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,1006,initial care capacity per capita,5936,-6221,120,32,8,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,1007,1004,1006,0,0,0,0,0,192,1,-1--1--1,,1|(0,0)|
+1,1008,1004,1005,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1009,1006,1005,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1010,1003,398,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1011,1005,398,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1012,annual clinical minutes per provider,7080,774,130,32,8,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,1013,1012,1019,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1014,minutes per NCD patient year,6106,200,110,32,8,131,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,1015,annual health service utilization per NCD patient,5978,66,143,48,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,1016,1015,1014,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1017,minutes per visit,5996,323,75,32,8,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,1018,1017,1014,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1019,total provider minutes,7074,491,83,32,8,131,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,1020,158,1019,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1021,total visits,5763,848,81,16,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,1022,active patient NCD related service utilization,5859,960,128,48,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,1023,NCD screening related service utilization,5658,720,106,48,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,1024,non NCD visits,5926,725,59,32,8,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,1025,1021,1024,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1026,1022,1024,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1027,1023,1024,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1028,total demand minutes,6716,456,83,32,8,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,1029,total NCD care demand pop,6412,132,103,32,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,1030,minutes per non NCD visit,6105,453,103,32,8,131,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,1031,initial total demand minutes,6900,592,105,32,8,131,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,1032,1031,1028,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1033,TIME STEP,6892,457,45,32,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,1034,1033,1028,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1035,1028,994,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1036,1019,994,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1037,demand fulfilment ratio,982,737,97,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,1038,1037,16,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1039,1019,1031,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1040,initial tot demand minute ratio,6829,727,108,32,8,131,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,1041,1040,1031,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1042,demand minutes for non NCD,6447,463,105,32,8,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,1043,1042,1028,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1044,1030,1042,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1045,1024,1042,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1046,demand minutes for NCD screening,6492,602,125,32,8,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,1047,1046,1028,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1048,NCD screening related service utilization,6246,751,106,48,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,1049,1048,1046,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,1050,demand minutes for NCD,6441,239,105,32,8,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,1051,1050,1028,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1052,1014,1050,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1053,1029,1050,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,1054,OneYear,-1738,3606,56,17,8,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,1055,1054,670,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1056,1054,673,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,1057,fraction of day in clinic time,7179,947,105,32,8,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,1058,1057,1012,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1059,provider productivity,7353,378,106,32,8,3,0,8,-1,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+10,1060,base average reimbursement per person,5183,-5419,119,48,8,131,0,10,0,0,0,0,0-0-0,0-0-0,|18||255-128-0,0,0,0,0,0,0
+1,1061,1060,130,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1062,TIME STEP,7695,-4069,45,32,8,2,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+10,1063,total annual clinical minutes per provider,6893,958,130,32,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1064,1063,1012,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1065,1059,1019,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,1066,1017,1030,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1067,593,598,1,0,0,0,0,128,0,-1--1--1,,1|(8146,-1269)|
+10,1068,procurement responsiveness,7100,-1926,99,32,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1069,1068,1189,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1070,annual inflation rate,4675,-5205,96,32,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1071,1070,138,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1072,1054,138,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1073,base provider per facility,8204,1567,86,32,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1074,1073,713,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1075,CBHI reimbursement approval fraction DATA,3344,-6112,107,67,8,131,0,0,0,0,0,0,0,0,0,0,0,0
+1,1076,1075,865,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,1077,TIME STEP,3902,-5174,45,32,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1078,1077,636,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1079,1028,995,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1080,1019,995,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1081,less weight on unconfident data,-3594,7103,106,32,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,1082,1081,1138,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,1083,1081,1125,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,1084,initial adult population,-183,73,68,32,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1085,1084,61,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1086,initial prevalence,-47,-74,70,32,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1087,1086,61,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1088,initial fraction in treatment,511,-98,99,32,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1089,1088,63,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1090,initial prevalent NCD,149,80,95,32,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1091,1090,63,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1092,1088,69,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1093,1090,69,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1094,DATA Amhara total population 30 yo plus,-362,234,144,32,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1095,1094,1084,0,0,0,0,0,128,1,-1--1--1,,1|(0,0)|
+1,1096,1084,1090,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1097,1086,1090,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1098,134,791,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1099,cost to fee ratio,8019,-4558,67,32,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1100,1099,791,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1101,utilized internal revenue,2336,7787,95,32,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,1102,internal revenue execution rate,2309,7649,102,32,8,3,0,2,-1,0,0,0,0-0-0,0-0-0,|||255-128-0,0,0,0,0,0,0
+1,1103,1102,1101,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1104,475,1101,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1105,utilized internal revenue,2623,7486,104,32,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1106,1105,511,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,1107,total internal revenue,2603,7340,87,32,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1108,1107,484,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,1109,total internal revenue,2557,7934,87,32,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1110,1109,552,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,1111,p23,3187,7921,25,17,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,1112,526,1111,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1113,525,1111,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1114,Time,3317,8012,48,17,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1115,1114,1111,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1116,1111,184,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1117,1101,552,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1118,p32 sim,-2597,6927,50,17,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,1119,Treated NCD,-2987,6915,58,32,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,1120,p32 data,-1840,6920,55,17,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,1121,DATA total HTN patients previously enrolled,-1337,6848,132,48,8,3,0,21,-1,0,0,0,128-128-128,192-192-192,||B|0-0-0,0,0,0,0,0,0
+1,1122,1121,1120,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1123,Time,-1740,7017,48,17,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1124,1123,1120,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1125,p32,-2277,6910,25,17,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,1126,1120,1125,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1127,1118,1125,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1128,Time,-2277,6959,48,17,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1129,1128,1125,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1130,p33 sim,-2605,7247,50,17,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,1131,Treated NCD,-2995,7235,58,32,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1132,1131,1130,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,1133,p33 data,-1848,7240,55,17,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+10,1134,DATA total DIA patients previously enrolled,-1345,7168,132,48,8,3,0,21,-1,0,0,0,128-128-128,192-192-192,||B|0-0-0,0,0,0,0,0,0
+1,1135,1134,1133,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1136,Time,-1748,7337,48,17,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1137,1136,1133,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1138,p33,-2285,7230,25,17,8,3,0,0,0,0,0,0,0,0,0,0,0,0
+1,1139,1133,1138,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1140,1130,1138,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1141,Time,-2285,7279,48,17,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1142,1141,1138,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1143,1125,184,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1144,1138,184,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1145,1119,1118,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,1146,implied tx enrollment frac post screening,2392,-1017,75,41,8,131,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1147,1146,14,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1148,strength of med availability on enrollment,2156,-1101,78,33,8,131,0,2,-1,0,0,0,0-0-0,0-0-0,|||253-128-8,0,0,0,0,0,0
+10,1149,strength of med availability on discontinuation,2389,-278,71,43,8,131,0,2,-1,0,0,0,0-0-0,0-0-0,|||253-128-8,0,0,0,0,0,0
+1,1150,1017,1046,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1151,1148,1146,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1152,995,1146,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1153,995,739,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1154,1149,739,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1155,relative essential medication availability,6597,-836,134,58,8,131,0,0,0,0,0,0,0,0,0,0,0,0
+1,1156,780,1155,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,1157,1155,1146,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,1158,168,1155,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1159,1155,739,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,1160,816,556,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,1161,816,843,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,1162,strategy to increase provider productivity,7709,377,141,42,8,131,0,12,0,0,0,0,-1--1--1,185-240-189,|18||0-0-0,0,0,0,0,0,0
+10,1163,provider productivity strategy start year,7711,523,134,43,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,1164,1163,1162,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,1165,provider strategy strength,7709,225,134,44,8,131,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,1166,1165,1162,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,1167,1162,1059,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,1168,target gap,3659,-5973,42,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1169,865,1168,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1170,target reimbursement,3559,-6062,65,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1171,1170,1168,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1172,TIME STEP,3996,-5731,61,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,1173,percent enrolled in insurance among eligible households,-1275,-4215,70,33,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1174,18,1173,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1175,95,1173,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1176,8,1173,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1177,target productivity,7299,244,58,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,1178,productivity gap,7527,227,58,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1179,1177,1178,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1180,1059,1178,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1181,strategy to increase demand responsiveness,7069,-2065,83,24,8,131,0,12,0,0,0,0,-1--1--1,185-240-189,|18||0-0-0,0,0,0,0,0,0
+10,1182,responsiveness strategy start year,6896,-2202,67,24,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,1183,1182,1181,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,1184,responsiveness strategy strength,7174,-2139,67,24,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,1185,1184,1181,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,1186,beta,7060,-2207,30,13,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,1187,1186,1181,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+12,1188,0,7004,-2050,30,30,8,0,0,0,-1,0,0,0,0,0,0,0,0,0
+10,1189,implied procurement responsiveness,7342,-1923,74,24,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1190,1181,1189,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1191,1189,598,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1192,unutilized internal revenue,5871,-3466,69,23,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,1193,unutilized internal revenue per facility,5868,-3353,69,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1194,1192,1193,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1195,1193,749,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1196,strategy to divert unutilized revenue,5864,-3264,83,24,8,131,0,12,0,0,0,0,-1--1--1,185-240-189,|18||0-0-0,0,0,0,0,0,0
+10,1197,unutilized revenue strategy start year,6280,-3088,67,24,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,1198,1197,1196,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,1199,unutilized revenue strategy strength,6340,-3212,67,24,8,3,0,8,0,0,0,0,0-0-0,0-0-0,|18||0-0-0,0,0,0,0,0,0
+1,1200,1199,1196,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+10,1201,beta,6194,-3343,30,13,8,130,0,11,-1,0,0,0,128-128-128,0-0-0,|18||128-128-128,0,0,0,0,0,0
+1,1202,1201,1196,0,0,0,0,0,128,0,-1--1--1,,1|(0,0)|
+1,1203,1196,1193,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1204,beta,-788,-5047,27,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,1205,beta,-3087,-3793,27,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,1206,alpha,9312,1425,31,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,1207,regional internal revenue,1923,7619,59,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,1208,facilities in Amhara,1797,7529,43,23,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1209,1208,1207,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1210,475,1207,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1211,demand fulfilment percent,6820,-528,65,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1212,995,1211,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1213,alpha,-3077,-3673,31,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1214,1213,505,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1215,alpha,-1072,-5302,31,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1216,1215,436,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1217,984,876,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1218,beta,7990,464,27,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1219,1218,1162,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1220,TIME STEP,8817,1537,53,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1221,1220,876,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1222,TIME STEP,7976,258,61,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1223,1222,1162,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1224,TIME STEP,7925,-2158,53,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,1225,TIME STEP,7297,-2075,53,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1226,1225,1181,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1227,1224,881,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1228,TIME STEP,5842,-3193,53,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1229,1228,1196,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1230,DATA total CBHI reimbursements requested,3028,-6035,115,48,8,130,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+10,1231,DATA total CBHI reimbursements,3114,-6289,115,32,8,130,0,28,0,0,0,0,-1--1--1,192-192-192,|18|B|255-0-0,0,0,0,0,0,0
+1,1232,1231,1075,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1233,1230,1075,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1234,TIME STEP,3550,-4922,53,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1235,1234,631,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1236,1172,860,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1237,TIME STEP,-1083,-5225,53,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1238,1237,436,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1239,TIME STEP,-2681,-3706,53,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1240,1239,505,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1241,TIME STEP,1376,1039,53,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1242,1241,868,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1243,DATA avg adjusted total unutilized internal revenue,5676,-4624,81,33,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1244,1243,112,0,0,0,0,0,192,1,-1--1--1,,1|(0,0)|
+10,1245,people screened for NCD,-3178,2974,66,23,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+10,1246,people screened for HTN in 2011,-3127,2763,61,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,1247,screening effort relative to initial data year HTN,-2843,2821,57,33,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+10,1248,screening effort relative to initial data year DIA,-2827,3034,57,33,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1249,1245,1246,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1250,1246,1247,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1251,1245,1247,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1252,people screened for DIA in 2011,-3024,3108,84,24,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1253,1245,1252,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1254,1245,1248,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1255,1247,170,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+1,1256,1248,171,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1257,Time,-3224,2702,33,13,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1258,1257,1246,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1259,TIME STEP,-3063,2697,61,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1260,1259,1246,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1261,Time,-3128,3213,33,13,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1262,1261,1252,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1263,TIME STEP,-3016,3219,61,12,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1264,1263,1252,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+1,1265,1252,1248,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+10,1266,Time,-2063,2851,33,13,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1267,1266,173,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1268,Time,-2051,3098,33,13,8,2,0,3,-1,0,0,0,128-128-128,0-0-0,|||128-128-128,0,0,0,0,0,0
+1,1269,1268,175,0,0,0,0,0,64,0,-1--1--1,,1|(0,0)|
+10,1270,fiscal time,5910,-4610,42,22,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1271,1270,112,0,0,0,0,0,192,1,-1--1--1,,1|(0,0)|
+10,1272,time to perceive change in access,6598,-6293,64,23,8,3,0,0,-1,0,0,0,0,0,0,0,0,0
+1,1273,1272,398,0,0,0,0,0,192,0,-1--1--1,,1|(0,0)|
+///---\\\
+:GRAPH GRAPH_1
+:TITLE Screened HTN
+:SCALE
+:VAR p1 sim
+:DATASET 
+:VAR p1 data
+:DATASET 
+
+:GRAPH GRAPH_2
+:TITLE Screened DIA
+:SCALE
+:VAR p2 sim
+:DATASET 
+:VAR p2 data
+:DATASET 
+
+:GRAPH GRAPH_3
+:TITLE Positive HTN
+:SCALE
+:VAR p3 sim
+:DATASET 
+:VAR p3 data
+:DATASET 
+
+:GRAPH GRAPH_4
+:TITLE Positive DIA
+:SCALE
+:VAR p4 sim
+:DATASET 
+:VAR p4 data
+:DATASET 
+
+:GRAPH GRAPH_5
+:TITLE Loss to follow up HTN
+:SCALE
+:VAR p5 sim
+:DATASET 
+:VAR p5 data
+:DATASET 
+
+:GRAPH GRAPH_6
+:TITLE Loss to follow up HTN
+:SCALE
+:VAR p6 sim
+:DATASET 
+:VAR p6 data
+:DATASET 
+
+:GRAPH GRAPH_7
+:TITLE death HTN
+:SCALE
+:VAR p7 sim
+:DATASET 
+:VAR p7 data
+:DATASET 
+
+:GRAPH GRAPH_8
+:TITLE death DIA
+:SCALE
+:VAR p8 sim
+:DATASET 
+:VAR p8 data
+:DATASET 
+
+:GRAPH GRAPH_9
+:TITLE CBHI drop out
+:SCALE
+:VAR p9 sim
+:DATASET 
+:VAR p9 data
+:DATASET 
+
+:GRAPH GRAPH_10
+:TITLE new CBHI beneficiaries
+:SCALE
+:VAR p10 sim
+:DATASET 
+:VAR p10 data
+:DATASET 
+
+:GRAPH GRAPH_11
+:TITLE Total CBHI beneficiaries
+:SCALE
+:VAR p11 sim
+:DATASET 
+:VAR p11 data
+:DATASET 
+
+:GRAPH GRAPH_12
+:TITLE New fee waived
+:SCALE
+:VAR p12 sim
+:DATASET 
+:VAR p12 data
+:DATASET 
+
+:GRAPH GRAPH_13
+:TITLE Total fee waived
+:SCALE
+:VAR p13 sim
+:DATASET 
+:VAR p13 data
+:DATASET 
+
+:GRAPH GRAPH_14
+:TITLE Total death
+:SCALE
+:VAR p14 sim
+:DATASET 
+:VAR p14 data
+:DATASET 
+
+:GRAPH GRAPH_17
+:TITLE HTN in Tx
+:SCALE
+:VAR p17 sim
+:DATASET 
+:VAR p17 data
+:DATASET 
+
+:GRAPH GRAPH_18
+:TITLE DIA in Tx
+:SCALE
+:VAR p18 sim
+:DATASET 
+:VAR p18 data
+:DATASET 
+
+:GRAPH GRAPH_19
+:TITLE CBHI collected fees
+:SCALE
+:VAR p19 sim
+:DATASET 
+:VAR p19 data
+:DATASET 
+
+:GRAPH GRAPH_20
+:TITLE total facility revenue
+:SCALE
+:VAR p20 sim
+:DATASET 
+:VAR p20 data
+:DATASET 
+
+:GRAPH GRAPH_21
+:TITLE total internal revenue
+:SCALE
+:VAR p21 sim
+:DATASET 
+:VAR p21 data
+:DATASET 
+
+:GRAPH GRAPH_22
+:TITLE utilized internal revenue
+:SCALE
+:VAR p22 sim
+:DATASET 
+:VAR p22 data
+:DATASET 
+
+:GRAPH GRAPH_24
+:TITLE CBHI reimbursements
+:SCALE
+:VAR p24 sim
+:DATASET 
+:VAR p24 data
+:DATASET 
+
+:GRAPH GRAPH_23
+:TITLE unutilized internal revenue
+:SCALE
+:VAR p23 sim
+:DATASET 
+:VAR p23 data
+:DATASET 
+:L<%^E!@
+1:medication.vdfx
+1:provider.vdfx
+1:screen.vdfx
+1:opr.vdfx
+1:cbhi.vdfx
+1:base.vdfx
+4:Time
+5:base NCD screening propensity[NCD]
+6:DIA
+6:HTN
+9:medication
+19:38,0
+24:2007
+25:2027
+26:2027
+57:1
+54:0
+55:0
+82:0
+86:0
+59:0
+56:0
+58:0
+71:0
+110:0
+111:0
+44:1252
+46:1
+45:7
+49:0
+50:0
+51:
+52:
+53:
+43:/Users/zhasgul/Library/CloudStorage/Dropbox-UniversityofMichigan/Zeynep Hasgul/MJ_Ethiopia HCF/Model files/For Github/base.xlsx
+47:
+48:
+22:patient,person
+10:EthiopiaHCF_MC_partial.out,EthiopiaHCF_MC35.out
+11:EthiopianHCF_powell.voc
+100:EthiopianHCF_powell_full.voc
+12:EthiopianHCF_payoff.vpd
+13:DATA.vdfx
+23:0
+18:MCMC_readfile.vsc
+20:Projection_sesitivity.lst
+15:1,0,0,0,0,0
+27:0,
+34:0,
+42:0
+72:0
+73:0
+35:Date
+36:YYYY-MM-DD
+37:2000
+38:1
+39:1
+40:2
+41:0
+95:0
+96:0
+97:0
+77:0
+78:0
+102:1
+93:0
+94:0
+92:0
+91:0
+90:0
+87:0
+75:
+43:/Users/zhasgul/Library/CloudStorage/Dropbox-UniversityofMichigan/Zeynep Hasgul/MJ_Ethiopia HCF/Model files/For Github/base.xlsx
+103:8,8,8,3,8
+105:0,0,0,0,0,0,0,0,0,0
+104:Vensim Sans|12||0-0-0|0-0-0|-1--1--1|0-0-255|192-192-192|-1--1--1

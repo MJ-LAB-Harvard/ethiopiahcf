@@ -89,16 +89,16 @@ export async function config() {
     genFormat,
 
     // Specify the Vensim model to read
-    modelFiles: ['EthiopiaHCF-V34.mdl'],
+    modelFiles: ['EthiopiaHCF-V35-dashboard.mdl'],
 
     // The following files will be hashed to determine whether the model needs
     // to be rebuilt when watch mode is active
-    modelInputPaths: ['EthiopiaHCF-V34.mdl'],
+    modelInputPaths: ['EthiopiaHCF-V35-dashboard.mdl'],
 
     // The following files will cause the model to be rebuilt when watch mode is
     // is active.  Note that these are globs so we use forward slashes regardless
     // of platform.
-    watchPaths: ['config/**', 'EthiopiaHCF-V34.mdl'],
+    watchPaths: ['config/**', 'EthiopiaHCF-V35-dashboard.mdl'],
 
     // Read csv files from `config` directory
     modelSpec: configProcessor({
