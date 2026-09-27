@@ -4,7 +4,7 @@ This repository contains the system dynamics model, calibration files, run scrip
 
 The model covers hypertension and diabetes care among adults aged 30 and older in Ethiopia's Amhara region. It links health financing (community-based health insurance (CBHI), fee waivers, facility revenue) with service delivery (screening, provider capacity, medicine availability) and treatment. It was developed with the Amhara Public Health Institute and regional policymakers and calibrated to regional administrative and DHIS2 data.
 
-**Dashboard:** https://msjalali.github.io/ethiopia-cbhi-ncd
+**Dashboard:** https://mj-lab-harvard.github.io/ethiopiahcf
 
 ## Repository structure
 
