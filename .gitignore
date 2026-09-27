@@ -1,23 +1,30 @@
+# Dashboard build output and dependencies
 artifacts
 baselines
 bundles
 node_modules
 sde-prep
+dashboard/packages/app.zip
+dashboard/packages/core.zip
+
+# Vensim run output (except the calibration data in vensim/)
 *.vdf
 *.vdfx
+!vensim/DATA.vdfx
 *.3vmfx
-packages/app.zip
-packages/core.zip
-slides-and-writing
+*.2mdl
+*.err
+*.rep
 
-# Vensim calibration output and analysis artifacts. These drive the manuscript
-# figures and the local calibration workflow, not the published dashboard.
+# Calibration and analysis files (except the published copies in vensim/ and results/)
 *.out
+!vensim/*.out
 *.out.prev
 *.xlsx
+!results/scenarios/*.xlsx
 *.Rmd
+*.Rhistory
 update_inputs_from_out.py
-Slide show/
 fig_lines.svg
 fig_heat.svg
 res.json
@@ -27,3 +34,16 @@ res.json
 *.prepin
 *.v33bak
 
+# Local notes, manuscript, and working folders
+/*.md
+!/README.md
+/dashboard/*.md
+*.docx
+Archived/
+Version_*/
+Slide show/
+slides-and-writing/
+
+# Local editor and tool settings
+/.*/
+!/.github/

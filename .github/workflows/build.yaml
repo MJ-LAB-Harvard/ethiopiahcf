@@ -32,22 +32,12 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        # Check out into an `ethiopia-cbhi-ncd`-named subdirectory (see checkout step below) so
-        # that relative data file paths configured in config/model.csv (which reference the
-        # project folder by its local name, `ethiopia-cbhi-ncd`) resolve the same way here as
-        # they do on the local development machine.
-        working-directory: ethiopia-cbhi-ncd
     steps:
       - name: Check out current branch
         uses: actions/checkout@v5
         with:
           # Fetch full history for artifact branch operations
           fetch-depth: 0
-          # Check out into an `ethiopia-cbhi-ncd`-named directory to match the local dev folder
-          # name, since config/model.csv's data file paths are resolved relative to this name
-          path: ethiopia-cbhi-ncd
 
       - name: Set up Node
         uses: actions/setup-node@v4
@@ -60,15 +50,18 @@ jobs:
           #node-version: lts/*
           node-version: 22
           cache: 'npm'
-          cache-dependency-path: ethiopia-cbhi-ncd/package-lock.json
+          cache-dependency-path: dashboard/package-lock.json
 
       - name: Install dependencies
+        working-directory: dashboard
         run: npm ci
 
       - name: Build
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: node ./scripts/ci-build.js
+        # Run from the repository root so the build products are stored in the
+        # `artifacts` directory at the root of the `artifacts` branch
+        run: node ./dashboard/scripts/ci-build.js
 
       - name: Check for deploy directory
         id: check-deploy
@@ -77,7 +70,7 @@ jobs:
           # step wrote build products.  If `deployPlugin` was disabled,
           # we will skip the remaining steps in this job (i.e., we will
           # not deploy to GitHub Pages).
-          if [ -d "./sde-prep/deploy" ]; then
+          if [ -d "./dashboard/sde-prep/deploy" ]; then
             echo "products_updated=true" >> $GITHUB_OUTPUT
           else
             echo "products_updated=false" >> $GITHUB_OUTPUT
@@ -115,7 +108,7 @@ jobs:
         if: steps.check-deploy.outputs.products_updated == 'true'
         uses: actions/upload-pages-artifact@v4
         with:
-          path: './ethiopia-cbhi-ncd/artifacts'
+          path: './artifacts'
 
       - name: Deploy to GitHub Pages
         if: steps.check-deploy.outputs.products_updated == 'true'

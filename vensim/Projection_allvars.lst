@@ -1,0 +1,35 @@
+
+population adjustment
+initial prevalence[HTN]
+initial prevalence[DIA]
+NCD development rate[HTN]
+NCD development rate[DIA]
+treated NCD death risk relative to untreated[HTN]
+treated NCD death risk relative to untreated[DIA]
+relative death risk for NCD[DIA]
+relative death risk for NCD[HTN]
+base death rate
+base NCD screening propensity[HTN]
+base NCD screening propensity[DIA]
+base positive NCD fraction for screened people[HTN]
+base positive NCD fraction for screened people[DIA]
+strength coverage on screen[HTN]
+strength coverage on screen[DIA]
+base tx enrollment rate post screening[DIA]
+base tx enrollment rate post screening[HTN]
+discontinuation rate[HTN]
+discontinuation rate[DIA]
+reference utilization per capita
+base average fee per person
+base average reimbursement per person
+cost to fee ratio
+initial CBHI revenue
+internal revenue execution rate
+subsidy fraction
+provider adjustment rate
+initial providers
+base medication restocking rate
+strength of med availability on enrollment[HTN]
+strength of med availability on enrollment[DIA]
+strength of med availability on discontinuation[HTN]
+strength of med availability on discontinuation[DIA]

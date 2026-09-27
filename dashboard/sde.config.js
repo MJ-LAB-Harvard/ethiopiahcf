@@ -79,21 +79,26 @@ const genFormat = 'js'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const configDir = joinPath(__dirname, 'config')
+const modelFile = joinPath(__dirname, 'EthiopiaHCF-V35-dashboard.mdl')
 const packagePath = (...parts) => joinPath(__dirname, 'packages', ...parts)
 const appPath = (...parts) => packagePath('app', ...parts)
 const corePath = (...parts) => packagePath('core', ...parts)
 
 export async function config() {
   return {
+    // Resolve all paths relative to this directory, so the build works from any
+    // working directory (the CI build runs from the repository root)
+    rootDir: __dirname,
+
     // Specify the format of the generated code, either 'js' or 'c'
     genFormat,
 
     // Specify the Vensim model to read
-    modelFiles: ['EthiopiaHCF-V35-dashboard.mdl'],
+    modelFiles: [modelFile],
 
     // The following files will be hashed to determine whether the model needs
     // to be rebuilt when watch mode is active
-    modelInputPaths: ['EthiopiaHCF-V35-dashboard.mdl'],
+    modelInputPaths: [modelFile],
 
     // The following files will cause the model to be rebuilt when watch mode is
     // is active.  Note that these are globs so we use forward slashes regardless

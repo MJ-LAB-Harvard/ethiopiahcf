@@ -1,0 +1,69 @@
+:COMSYS After 15879 simulations
+:COMSYS Best payoff is -216.694
+:COMSYS User terminated multiple search session
+:OPTIMIZER=Powell
+:SENSITIVITY=Off
+:MULTIPLE_START=RRandom
+:RANDOM_NUMBER=Default
+:OUTPUT_LEVEL=On
+:TRACE=Off
+:MAX_ITERATIONS=1000
+:RESTART_MAX=0
+:PASS_LIMIT=2
+:FRACTIONAL_TOLERANCE=1e-06
+:TOLERANCE_MULTIPLIER=21
+:ABSOLUTE_TOLERANCE=1
+:SCALE_ABSOLUTE=1
+:VECTOR_POINTS=25
+:MCINITMETHOD=0
+:MCPAYOFFTYPE=0
+:MCRECORD=0
+:MCSCHEDULE=0
+:MCLIMIT=0
+:MCBURNIN=0
+:MCNCHAINS=2
+:MCOUTLIER=0.05
+:MCGAMMA=1
+:MCEPSILON=0.01
+:MCDELTA=0.0001
+:MCJUMP=0.05
+:MCUPDATEPAIRS=2
+:MCXOVER=0.2
+:MCTEMP=1
+:MCFTEMP=1
+:MCCOOLING=1000
+1000 <= population adjustment  = 291083  <= 5e+08
+0.15 <= initial prevalence[HTN] = 0.196202  <= 0.3
+0.05 <= initial prevalence[DIA] = 0.078621  <= 0.15
+0.01 <= NCD development rate[HTN] = 0.01  <= 0.1
+0.001 <= NCD development rate[DIA] = 0.00328882  <= 0.1
+0.001 <= treated NCD death risk relative to untreated[HTN] = 0.0841553  <= 0.5
+0.001 <= treated NCD death risk relative to untreated[DIA] = 0.356737  <= 0.5
+1 <= relative death risk for NCD[DIA] = 7.33871  <= 10
+1 <= relative death risk for NCD[HTN] = 6.72174  <= 10
+1e-05 <= base death rate  = 0.000284804  <= 0.01
+0.001 <= base NCD screening propensity[HTN] = 0.00581473  <= 0.2
+0.001 <= base NCD screening propensity[DIA] = 0.00128731  <= 0.2
+0.1 <= base positive NCD fraction for screened people[HTN] = 0.135141  <= 0.6
+0.05 <= base positive NCD fraction for screened people[DIA] = 0.299352  <= 0.3
+0.001 <= strength coverage on screen[HTN] = 4.25248  <= 10
+0.001 <= strength coverage on screen[DIA] = 3.11709  <= 10
+0.001 <= base tx enrollment rate post screening[DIA] = 1  <= 1
+0.001 <= base tx enrollment rate post screening[HTN] = 1  <= 1
+0.001 <= discontinuation rate[HTN] = 0.0035607  <= 0.1
+0.001 <= discontinuation rate[DIA] = 0.00784076  <= 0.5
+0.001 <= reference utilization per capita  = 0.278743  <= 10
+1 <= base average fee per person  = 1898.19  <= 2000
+1 <= base average reimbursement per person   = 376.256  <= 2000
+0.3 <= cost to fee ratio  = 0.355872  <= 0.95
+1e+06 <= initial average annual IR   = 7.19125e+09  <= 1e+10
+1000 <= initial CBHI revenue  = 2.64843e+08  <= 1e+10
+0.1 <= internal revenue execution rate  = 0.73582  <= 0.9
+0.01 <= subsidy fraction   = 0.11919  <= 1
+10 <= provider adjustment rate  = 252.771  <= 10000
+100 <= initial providers  = 266.872  <= 100000
+0.1 <= base medication restocking rate  = 0.535692  <= 3
+0.001 <= strength of med availability on enrollment[HTN] = 1  <= 1
+0.001 <= strength of med availability on enrollment[DIA] = 1  <= 1
+0.001 <= strength of med availability on discontinuation[HTN] = 0.00100097  <= 1
+0.001 <= strength of med availability on discontinuation[DIA] = 1  <= 1
