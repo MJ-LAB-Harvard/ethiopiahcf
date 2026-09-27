@@ -6,8 +6,6 @@ The model covers hypertension and diabetes care among adults aged 30 and older i
 
 **Dashboard:** https://msjalali.github.io/ethiopia-cbhi-ncd
 
-**Study:** link to be added on publication.
-
 ## Repository structure
 
 ```
@@ -64,29 +62,9 @@ All Vensim files sit in one folder because the run scripts (`.cmd`) load the oth
 - **Scenario codes.** In `All scenario combinations.cmd`, each run is named `Policy_CRSPM`, where each digit is 1 if that option is on, in the order C, R, S, P, M. `Policy_00000` is the baseline and `Policy_11111` has all five options. `policy_results.csv` stores these 32 runs side by side in the same order.
 - **Two-step calibration.** The six CBHI and fee-waiver enrollment parameters were estimated first, against the five coverage series. They were then held fixed while the remaining 35 parameters were estimated. Scenario runs load both `.out` files.
 
-## Running the Vensim model
-
-The model requires Vensim DSS. Open a `.cmd` file from within the `vensim/` folder, in this order:
-
-1. `Calibration_MC_partial.cmd` and `Calibration_Powell.cmd`, then `Calibration_MC.cmd`
-2. `scenario runs_journal version.cmd` and `All scenario combinations.cmd`
-3. `Scenario_heat map_journal version.cmd`
-4. `Sens_allvars*.cmd` and `Base_sens*.cmd`
-
-The full MCMC chains are not included because of their size and are available on request.
-
 ## Dashboard
 
 The dashboard runs the model in the browser using [SDEverywhere](https://github.com/climateinteractive/SDEverywhere). Its copy of the model, `dashboard/EthiopiaHCF-V35-dashboard.mdl`, is the same as `vensim/EthiopiaHCF-V35.mdl` except that one equation (`CBHI paid`) is split in two so that SDEverywhere translates its delay correctly. Results are identical in Vensim. The calibrated parameter values, sliders, graphs, example scenarios, and figure captions are set in the CSV files in `dashboard/config/`.
-
-To run it locally:
-
-```sh
-cd dashboard
-npm install
-npm run build     # build the model and app
-npm run dev       # live development mode
-```
 
 Every push to `main` rebuilds and redeploys the dashboard through GitHub Actions.
 
